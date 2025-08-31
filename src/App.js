@@ -5,10 +5,16 @@ import Button from './components/Button';
 import Input from "./components/Input";
 import Link from "./components/Link";
 import ErrorMessage from "./components/ErrorMessage";
+import Footer from "./components/Footer";
+import Image from "./components/Image";
+import Field from "./components/Field";
 Handlebars.registerPartial('Button', Button);
 Handlebars.registerPartial('Input', Input);
 Handlebars.registerPartial('Link', Link);
 Handlebars.registerPartial('ErrorMessage', ErrorMessage);
+Handlebars.registerPartial('Footer', Footer);
+Handlebars.registerPartial('Image', Image);
+Handlebars.registerPartial('Field', Field);
 
 export default class App {
     constructor() {
@@ -18,16 +24,65 @@ export default class App {
         this.appElement = document.getElementById('app');
     }
 
-    render() {
-        let template;
-        if (this.state.currentPage === 'authorization') {
-            template = Handlebars.compile(Pages.AuthorizationPage);
-            this.appElement.innerHTML = template({});
-        } else if (this.state.currentPage === 'registration') {
-            template = Handlebars.compile(Pages.RegisterPage);
-            this.appElement.innerHTML = template({});
+    footerTemplate() {
+        const footerTemplate = Handlebars.compile(Footer);
+        return footerTemplate({});
+    }
+
+    authorizationPageTemplate() {
+        const template = Handlebars.compile(Pages.AuthorizationPage);
+        return template({});
+    }
+
+    registrationPageTemplate() {
+        const template = Handlebars.compile(Pages.RegisterPage);
+        return template({});
+    }
+
+    errorPageTemplate(errorCode) {
+        let template = Handlebars.compile(Pages.Error500)
+
+        if (errorCode === 404) {
+            template = Handlebars.compile(Pages.Error404);
         }
 
+        return template({});
+    }
+
+    chatListPageTemplate() {
+
+    }
+
+    profilePageTemplate() {
+        const template = Handlebars.compile(Pages.ProfilePage);
+        return template({});
+    }
+
+    render() {
+        const {currentPage} = this.state;
+        let pageHTML = "";
+        switch (currentPage) {
+            case 'authorization':
+                pageHTML = this.authorizationPageTemplate();
+                break;
+            case 'registration':
+                pageHTML = this.registrationPageTemplate();
+                break;
+            case 'chatList':
+                pageHTML = this.chatListPageTemplate();
+                break;
+            case 'profileSettings':
+                pageHTML = this.profilePageTemplate();
+                break;
+            case 'error404':
+                pageHTML = this.errorPageTemplate(404);
+                break;
+            case 'error500':
+                pageHTML = this.errorPageTemplate(500);
+                break;
+        }
+
+        this.appElement.innerHTML = pageHTML + this.footerTemplate();
 
         this.addEventListeners();
     };
@@ -41,6 +96,14 @@ export default class App {
             const signInBtn = document.getElementById("signIn");
             signInBtn.addEventListener('click', () => this.changePage('authorization'));
         }
+
+        const footerLinks = document.querySelectorAll('.footer-link');
+        footerLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.changePage(e.target.dataset.page);
+            });
+        });
     }
 
     changePage(page) {

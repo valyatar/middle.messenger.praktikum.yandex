@@ -50,7 +50,8 @@ export default class App {
     }
 
     chatListPageTemplate() {
-
+        const template = Handlebars.compile(Pages.ChatListPage);
+        return template({});
     }
 
     profilePageTemplate() {

@@ -1,0 +1,29 @@
+.footer {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--secondary-color);
+    display: flex;
+    justify-content: space-around;
+
+    .footer__list {
+        display: flex;
+        gap: 20px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        .footer__item {
+            box-shadow: none;
+        }
+
+        .footer-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+}

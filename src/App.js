@@ -59,6 +59,11 @@ export default class App {
         return template({});
     }
 
+    changePwdPageTemplate() {
+        const template = Handlebars.compile(Pages.ChangePassword);
+        return template({});
+    }
+
     render() {
         const {currentPage} = this.state;
         let pageHTML = "";
@@ -74,6 +79,9 @@ export default class App {
                 break;
             case 'profileSettings':
                 pageHTML = this.profilePageTemplate();
+                break;
+            case 'changePassword':
+                pageHTML = this.changePwdPageTemplate();
                 break;
             case 'error404':
                 pageHTML = this.errorPageTemplate(404);
@@ -96,6 +104,9 @@ export default class App {
         } else if (currentPage === 'registration') {
             const signInBtn = document.getElementById("signIn");
             signInBtn.addEventListener('click', () => this.changePage('authorization'));
+        } else if (currentPage === 'profileSettings') {
+            const changePwdBtn = document.getElementById("changePassword");
+            changePwdBtn.addEventListener('click', () => this.changePage('changePassword'));
         }
 
         const footerLinks = document.querySelectorAll('.footer-link');

@@ -7,4 +7,4 @@ export default `<footer class="footer">
   {{> Link href="#" class="footer-link" data-page="profileSettings" text="Настройки пользователя"}}
   {{> Link href="#" class="footer-link" data-page="error404" text="404"}}
   {{> Link href="#" class="footer-link" data-page="error500" text="500"}}
-</footer>`
+</footer>`;

@@ -1,4 +1,4 @@
-import './field.pcss'
+import './field.pcss';
 
 export default `
 <div class="info-row">

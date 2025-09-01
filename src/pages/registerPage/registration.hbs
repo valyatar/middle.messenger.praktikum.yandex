@@ -1,12 +1,14 @@
-<div className="app">
-    <h1>Регистрация</h1>
-    {{> Input id="email" name="email" type="email" placeholder="Почта"}}
-    {{> Input id="login" name="login" type="text" placeholder="Логин"}}
-    {{> Input id="first_name" name="first_name" type="text" placeholder="Имя"}}
-    {{> Input id="second_name" name="second_name" type="text" placeholder="Фамилия"}}
-    {{> Input id="phone" name="phone" type="tel" placeholder="Телефон"}}
-    {{> Input id="password" name="password" type="password" placeholder="Пароль"}}
-    {{> Input id="password_check" name="password_check" type="password" placeholder="Пароль (еще раз)"}}
-    {{> Button id="register-button" text="Зарегистрироваться"}}
-    {{> Link id="signIn" href="#" text="Войти?" data-page="authorization"}}
-</div>
+<main className="register">
+    <form>
+        <h2>Регистрация</h2>
+        {{> Input id="email" name="email" type="email" placeholder="Почта"}}
+        {{> Input id="login" name="login" type="text" placeholder="Логин"}}
+        {{> Input id="first_name" name="first_name" type="text" placeholder="Имя"}}
+        {{> Input id="second_name" name="second_name" type="text" placeholder="Фамилия"}}
+        {{> Input id="phone" name="phone" type="tel" placeholder="Телефон"}}
+        {{> Input id="password" name="password" type="password" placeholder="Пароль"}}
+        {{> Input id="password_check" name="password_check" type="password" placeholder="Пароль (еще раз)"}}
+        {{> Button id="register-button" text="Зарегистрироваться"}}
+        {{> Link id="signIn" href="#" text="Войти?" data-page="authorization"}}
+    </form>
+</main>

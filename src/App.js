@@ -91,7 +91,10 @@ export default class App {
                 break;
         }
 
-        this.appElement.innerHTML = pageHTML + this.footerTemplate();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(pageHTML + this.footerTemplate(), "text/html");
+        this.appElement.textContent = "";
+        this.appElement.append(...doc.body.childNodes);
 
         this.addEventListeners();
     };

@@ -1,5 +1,5 @@
 import './footer.pcss';
-
+// временный компонент, чтобы вывести весь список доступных страниц
 export default `<footer class="footer">
   {{> Link href="#" class="footer-link" data-page="authorization" text="Авторизация"}}
   {{> Link href="#" class="footer-link" data-page="registration" text="Регистрация"}}

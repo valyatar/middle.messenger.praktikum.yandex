@@ -1,7 +1,21 @@
-<div className="app">
+<div class="profile-settings">
     <div id="avatar" class="img-centered">
         {{> Image size="120px"}}
     </div>
     <h1>Валентина</h1>
-    {{> Field id="email" label="Почта" value="mail@yandex.ru"}}
+    <div>
+        {{> Field id="email" name="email" label="Почта" value="mail@yandex.ru"}}
+        {{> Field id="login" name="login" label="Логин" value="valyatar"}}
+        {{> Field id="first_name" name="first_name" label="Имя" value="Valya"}}
+        {{> Field id="second_name" name="second_name" label="Фамилия" value="Tarasova"}}
+        {{> Field id="display_name" name="display_name" label="Имя в чате" value="valya"}}
+        {{> Field id="phone" name="phone" label="Телефон" value="88008888888"}}
+    </div>
+
+    <div class="profile-settings__actions">
+        {{> Link id="" href="#" text="Изменить данные" data-page=""}}
+        {{> Link id="" href="#" text="Изменить пароль" data-page=""}}
+        {{> Link id="" href="#" text="Выйти" data-page=""}}
+    </div>
+
 </div>

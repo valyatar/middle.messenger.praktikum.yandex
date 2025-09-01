@@ -1,3 +1,5 @@
+import './field.pcss'
+
 export default `
 <div class="info-row">
   <label class="info-row__label" for="{{id}}">{{label}}</label>

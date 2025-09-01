@@ -1,13 +1,13 @@
 import Handlebars from "handlebars"
 import * as Pages from './pages';
 
-import Button from './components/Button';
-import Input from "./components/Input";
-import Link from "./components/Link";
-import ErrorMessage from "./components/ErrorMessage";
-import Footer from "./components/Footer";
-import Image from "./components/Image";
-import Field from "./components/Field";
+import Button from './components/Button/Button';
+import Input from "./components/Input/Input";
+import Link from "./components/Link/Link";
+import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
+import Footer from "./components/Footer/Footer";
+import Image from "./components/Image/Image";
+import Field from "./components/Field/Field";
 Handlebars.registerPartial('Button', Button);
 Handlebars.registerPartial('Input', Input);
 Handlebars.registerPartial('Link', Link);

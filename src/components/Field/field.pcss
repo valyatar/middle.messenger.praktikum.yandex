@@ -1,0 +1,44 @@
+.info-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid #e6e6e6;
+}
+
+.info-row__label {
+    color: #222;
+    font-size: 16px;
+}
+
+.info-row__control {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.info-row__control {
+    .input {
+        max-width: 360px;
+        width: 100%;
+        text-align: right;
+        background: transparent;
+        border: none;
+        color: #9aa0a6;
+        padding: 8px 0;
+        box-shadow: none;
+        margin: 0;
+        font-size: 16px;
+    }
+
+    .input:focus {
+        outline: none;
+        color: #333;
+    }
+
+    .info-row__value {
+        font-size: 16px;
+        color: #9aa0a6;
+    }
+}

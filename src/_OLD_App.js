@@ -1,22 +1,22 @@
 import Handlebars from "handlebars"
 import * as Pages from './pages';
 
-import Button from './components/Button/Button';
-import Input from "./components/Input/Input";
-import Link from "./components/Link/Link";
-import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
-import Footer from "./components/Footer/Footer";
-import Image from "./components/Image/Image";
-import Field from "./components/Field/Field";
+import Button from './components/Button/_OLD_Button';
+import Input from "./components/Input/_OLD_Input";
+// import Link from "./components/Link/Link";
+import ErrorMessage from "./components/ErrorMessage/_OLD_ErrorMessage";
+// import Footer from "./components/Footer/Footer";
+import Image from "./components/Image/_OLD_Image";
+import Field from "./components/Field/_OLD_Field";
 Handlebars.registerPartial('Button', Button);
 Handlebars.registerPartial('Input', Input);
-Handlebars.registerPartial('Link', Link);
+// Handlebars.registerPartial('Link', Link);
 Handlebars.registerPartial('ErrorMessage', ErrorMessage);
-Handlebars.registerPartial('Footer', Footer);
+// Handlebars.registerPartial('Footer', Footer);
 Handlebars.registerPartial('Image', Image);
 Handlebars.registerPartial('Field', Field);
 
-export default class App {
+export default class _OLD_App {
     constructor() {
         this.state = {
             currentPage: 'authorization',
@@ -92,7 +92,7 @@ export default class App {
         }
 
         const parser = new DOMParser();
-        const doc = parser.parseFromString(pageHTML + this.footerTemplate(), "text/html");
+        const doc = parser.parseFromString(pageHTML, "text/html");
         this.appElement.textContent = "";
         this.appElement.append(...doc.body.childNodes);
 

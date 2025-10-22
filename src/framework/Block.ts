@@ -155,6 +155,7 @@ export default class Block {
         });
 
         const fragment = this._createDocumentElement('template');
+        //fixme - не через innerHTML
         fragment.innerHTML = Handlebars.compile(this.render())(propsAndStubs);
 
         Object.values(this.children).forEach(child => {
@@ -224,6 +225,8 @@ export default class Block {
         return document.createElement(tagName) as HTMLTemplateElement;
     }
 
+
+    // возможно переделать - удалять элемент из дом-а
     public show(): void {
         const content = this.getContent();
         if (content) {

@@ -16,6 +16,7 @@ export default class EventBus {
         this.listeners[event].push(callback);
     }
 
+    // не забыть использовать
     public off(event: string, callback: EventCallback): void {
         if (!this.listeners[event]) {
             throw new Error(`No event: ${event}`);

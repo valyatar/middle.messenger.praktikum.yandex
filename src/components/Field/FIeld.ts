@@ -7,11 +7,12 @@ export class Field extends Block {
     constructor(props: any) {
         super({
             ...props,
-            SearchInput: new Input({
-                id: "search",
-                name: "search",
-                type: "text",
-                placeholder: "Поиск",
+            FieldInput: new Input({
+                id: props.id,
+                name: props.name,
+                type: "",
+                placeholder: props.label,
+                value: props.value
             }),
         });
     }
@@ -33,7 +34,7 @@ export class Field extends Block {
   <div class="info-row">
     <label class="info-row__label" for="{{id}}">{{label}}</label>
     <div class="info-row__control">
-      {{> Input id=id name=name type=type placeholder=placeholder value=value }}
+      {{{ FieldInput }}}
     </div>
   </div>
 {{/if}}

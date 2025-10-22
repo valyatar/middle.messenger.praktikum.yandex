@@ -1,5 +1,5 @@
 import Block from '../../framework/Block';
-
+import './image.pcss';
 export class Image extends Block {
     constructor(props: any) {
         super({

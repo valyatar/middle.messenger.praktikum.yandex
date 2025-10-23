@@ -22,16 +22,13 @@ export default class Block {
   };
 
   protected _element: HTMLElement | null = null;
-
   protected _id: number = Math.floor(100000 + Math.random() * 900000);
-
   protected props: BlockProps;
-
   protected children: Record<string, Block>;
-
   protected lists: Record<string, Block[]>;
-
   protected eventBus: () => EventBus;
+
+  private eventCallbacks: Map<string, EventCallback> = new Map();
 
   constructor(propsWithChildren: BlockProps = {}) {
     const eventBus = new EventBus();
@@ -55,11 +52,69 @@ export default class Block {
     });
   }
 
+  private _removeEvents(): void {
+    const { events = {} } = this.props;
+    Object.keys(events).forEach(eventName => {
+      if (this._element && events[eventName]) {
+        this._element.removeEventListener(eventName, events[eventName]);
+      }
+    });
+  }
+
   private _registerEvents(eventBus: EventBus): void {
-    eventBus.on(Block.EVENTS.INIT, this.init.bind(this) as EventCallback);
-    eventBus.on(Block.EVENTS.FLOW_CDM, this._componentDidMount.bind(this) as EventCallback);
-    eventBus.on(Block.EVENTS.FLOW_CDU, this._componentDidUpdate.bind(this) as EventCallback);
-    eventBus.on(Block.EVENTS.FLOW_RENDER, this._render.bind(this) as EventCallback);
+    const initCallback = this.init.bind(this) as EventCallback;
+    const componentDidMountCallback = this._componentDidMount.bind(this) as EventCallback;
+    const componentDidUpdateCallback = this._componentDidUpdate.bind(this) as EventCallback;
+    const renderCallback = this._render.bind(this) as EventCallback;
+
+    this.eventCallbacks.set(Block.EVENTS.INIT, initCallback);
+    this.eventCallbacks.set(Block.EVENTS.FLOW_CDM, componentDidMountCallback);
+    this.eventCallbacks.set(Block.EVENTS.FLOW_CDU, componentDidUpdateCallback);
+    this.eventCallbacks.set(Block.EVENTS.FLOW_RENDER, renderCallback);
+
+    eventBus.on(Block.EVENTS.INIT, initCallback);
+    eventBus.on(Block.EVENTS.FLOW_CDM, componentDidMountCallback);
+    eventBus.on(Block.EVENTS.FLOW_CDU, componentDidUpdateCallback);
+    eventBus.on(Block.EVENTS.FLOW_RENDER, renderCallback);
+  }
+
+  public destroy(): void {
+    this._removeEvents();
+    this._unregisterEvents();
+
+    Object.values(this.children).forEach(child => {
+      if (typeof child.destroy === 'function') {
+        child.destroy();
+      }
+    });
+
+    Object.values(this.lists).forEach(list => {
+      list.forEach(item => {
+        if (typeof item.destroy === 'function') {
+          item.destroy();
+        }
+      });
+    });
+
+    this._element = null;
+  }
+
+  private _unregisterEvents(): void {
+    const eventBus = this.eventBus();
+
+    this.eventCallbacks.forEach((callback, event) => {
+      eventBus.off(event, callback);
+    });
+
+    this.eventCallbacks.clear();
+  }
+
+  protected off(event: string): void {
+    const callback = this.eventCallbacks.get(event);
+    if (callback) {
+      this.eventBus().off(event, callback);
+      this.eventCallbacks.delete(event);
+    }
   }
 
   protected init(): void {

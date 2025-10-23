@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-types */
-export type EventCallback = (...args: any[]) => void;
+export type EventCallback<T extends unknown[] = unknown[]> = (...args: T) => void;
 
 export default class EventBus {
   private listeners: Record<string, EventCallback[]>;
@@ -8,26 +7,25 @@ export default class EventBus {
     this.listeners = {};
   }
 
-  public on(event: string, callback: EventCallback): void {
+  public on<T extends unknown[] = unknown[]>(event: string, callback: EventCallback<T>): void {
     if (!this.listeners[event]) {
       this.listeners[event] = [];
     }
 
-    this.listeners[event].push(callback);
+    this.listeners[event].push(callback as EventCallback);
   }
 
-  // не забыть использовать
-  public off(event: string, callback: EventCallback): void {
+  public off<T extends unknown[] = unknown[]>(event: string, callback: EventCallback<T>): void {
     if (!this.listeners[event]) {
       throw new Error(`No event: ${event}`);
     }
 
     this.listeners[event] = this.listeners[event].filter(
-      listener => listener !== callback,
+        listener => listener !== callback,
     );
   }
 
-  public emit(event: string, ...args: any[]): void {
+  public emit<T extends unknown[] = unknown[]>(event: string, ...args: T): void {
     if (!this.listeners[event]) {
       throw new Error(`No event: ${event}`);
     }

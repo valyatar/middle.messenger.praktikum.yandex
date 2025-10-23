@@ -45,7 +45,9 @@ export default class Footer extends Block {
         href: '#',
         datapage,
         text,
-        onClick: (event: Event) => onClick(event),
+        events: {
+          onClick: (event: Event) => onClick(event),
+        },
         attr: { class: 'footer-link' },
       });
     });

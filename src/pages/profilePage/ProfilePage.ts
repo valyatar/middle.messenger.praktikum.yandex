@@ -60,7 +60,6 @@ export class ProfilePage extends Block {
         datapage: '',
         text: 'Изменить данные',
         onClick: (event: Event) => {
-          console.log('CLICK');
           event.preventDefault();
           event.stopPropagation();
         },
@@ -71,7 +70,6 @@ export class ProfilePage extends Block {
         datapage: 'changePassword',
         text: 'Изменить пароль',
         onClick: (event: Event) => {
-          console.log('CLICK');
           event.preventDefault();
           event.stopPropagation();
         },
@@ -82,7 +80,6 @@ export class ProfilePage extends Block {
         datapage: '',
         text: 'Выйти',
         onClick: (event: Event) => {
-          console.log('CLICK');
           event.preventDefault();
           event.stopPropagation();
         },

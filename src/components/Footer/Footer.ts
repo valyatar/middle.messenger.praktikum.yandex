@@ -10,49 +10,31 @@ export default class Footer extends Block {
         name: 'AuthorizationLink',
         datapage: 'authorization',
         text: 'Авторизация',
-        onClick: (event: Event) => {
-          console.log(event);
-        },
       },
       {
         name: 'RegistrationLink',
         datapage: 'registration',
         text: 'Регистрация',
-        onClick: (event: Event) => {
-          console.log(event);
-        },
       },
       {
         name: 'ChatListLink',
         datapage: 'chatList',
         text: 'Список чатов',
-        onClick: (event: Event) => {
-          console.log(event);
-        },
       },
       {
         name: 'ProfileSettingsLink',
         datapage: 'profileSettings',
         text: 'Настройки пользователя',
-        onClick: (event: Event) => {
-          console.log(event);
-        },
       },
       {
         name: 'ErrorLink404',
         datapage: 'error404',
         text: '404',
-        onClick: (event: Event) => {
-          console.log(event);
-        },
       },
       {
         name: 'ErrorLink500',
         datapage: 'error500',
         text: '500',
-        onClick: (event: Event) => {
-          console.log(event);
-        },
       },
     ];
 

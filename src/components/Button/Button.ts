@@ -12,9 +12,9 @@ export default class Button extends Block {
     super({
       ...props,
       events: {
-        click: (e: Event) => {
-          console.log(e);
-        },
+        // click: (e: Event) => {
+        //   console.log(e);
+        // },
       },
     });
   }

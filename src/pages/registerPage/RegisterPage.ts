@@ -9,77 +9,97 @@ export class RegisterPage extends Block {
       EmailInput: new Input({
         id: 'email',
         name: 'email',
-        type: '',
+        type: 'text',
         placeholder: 'Почта',
       }),
       LoginInput: new Input({
         id: 'login',
         name: 'login',
-        type: '',
+        type: 'text',
         placeholder: 'Логин',
       }),
       FirstNameInput: new Input({
         id: 'first_name',
         name: 'first_name',
-        type: '',
+        type: 'text',
         placeholder: 'Имя',
       }),
       SecondNameInput: new Input({
         id: 'second_name',
         name: 'second_name',
-        type: '',
+        type: 'text',
         placeholder: 'Фамилия',
       }),
       PhoneInput: new Input({
         id: 'phone',
         name: 'phone',
-        type: '',
+        type: 'tel',
         placeholder: 'Телефон',
       }),
       PasswordInput: new Input({
         id: 'password',
         name: 'password',
-        type: '',
+        type: 'password',
         placeholder: 'Пароль',
       }),
       PasswordCheckInput: new Input({
         id: 'password_check',
         name: 'password_check',
-        type: '',
+        type: 'password',
         placeholder: 'Пароль (еще раз)',
       }),
       RegistrationBtn: new Button({
         id: 'register-button',
         text: 'Зарегистрироваться',
+        type: 'submit',
       }),
       SignInLink: new Link({
         href: '#',
         datapage: 'authorization',
         text: 'Войти?',
         onClick: (event: Event) => {
-          console.log('CLICK');
           event.preventDefault();
           event.stopPropagation();
         },
         id: 'signIn',
       }),
+      events: {
+        submit: (e: Event) => this.handleSubmit(e),
+      },
     });
   }
 
+  private handleSubmit(event: Event): void {
+    event.preventDefault();
+
+    const formData = new FormData(event.target as HTMLFormElement);
+    const data: Record<string, string> = {};
+
+    for (const [key, value] of formData.entries()) {
+      if (typeof value === 'string') {
+        data[key] = value;
+      } else {
+        data[key] = String(value);
+      }
+    }
+
+    console.log('Данные со страницы регистрации:', data);
+  }
+
   render(): string {
-    return `<main className="register">
-    <form>
-        <h2>Регистрация</h2>
-        {{{ EmailInput }}}
-        {{{ LoginInput }}}
-        {{{ FirstNameInput }}}
-        {{{ SecondNameInput }}}
-        {{{ PhoneInput }}}
-        {{{ PasswordInput }}}
-        {{{ PasswordCheckInput }}}
-        {{{ RegistrationBtn }}}
-        {{{ SignInLink }}}
-    </form>
-</main>`;
+    return `<main class="register">
+              <form>
+                <h2>Регистрация</h2>
+                {{{ EmailInput }}}
+                {{{ LoginInput }}}
+                {{{ FirstNameInput }}}
+                {{{ SecondNameInput }}}
+                {{{ PhoneInput }}}
+                {{{ PasswordInput }}}
+                {{{ PasswordCheckInput }}}
+                {{{ RegistrationBtn }}}
+                {{{ SignInLink }}}
+              </form>
+            </main>`;
   }
 }

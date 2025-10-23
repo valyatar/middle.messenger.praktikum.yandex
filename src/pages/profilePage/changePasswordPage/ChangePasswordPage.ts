@@ -1,5 +1,5 @@
 import Block from '../../../framework/Block';
-import { Field } from '../../../components/Field/FIeld';
+import { Field } from '../../../components/Field/Field';
 import { Image } from '../../../components/Image/Image';
 import Button from '../../../components/Button/Button';
 
@@ -9,9 +9,9 @@ export class ChangePasswordPage extends Block {
   constructor() {
     super({
       Avatar: new Image({
-        size:'120px',
-        src:'/static/icons/avatar.svg',
-        name:'avatar',
+        size: '120px',
+        src: '/static/icons/avatar.svg',
+        name: 'avatar',
       }),
       OldPasswordField: new Field({
         id: 'oldPassword',
@@ -36,25 +36,44 @@ export class ChangePasswordPage extends Block {
         text: 'Сохранить',
         type: 'submit',
       }),
+      events: {
+        submit: (e: Event) => this.handleSubmit(e),
+      },
     });
+  }
+
+  private handleSubmit(event: Event): void {
+    event.preventDefault();
+
+    const formData = new FormData(event.target as HTMLFormElement);
+    const data: Record<string, string> = {};
+
+    for (const [key, value] of formData.entries()) {
+      if (typeof value === 'string') {
+        data[key] = value;
+      } else {
+        data[key] = String(value);
+      }
+    }
+
+    console.log('Данные со страницы смены пароля:', data);
   }
 
   render(): string {
     return `<main class="change-pwd">
-    <form onsubmit="return false;">
-        <div id="avatar" name="avatar" class="img-centered">
-            {{{ Avatar }}}
-        </div>
-        <div>
-            {{{ OldPasswordField }}}
-            {{{ NewPasswordField }}}
-            {{{ RepeatNewPasswordField }}}
-        </div>
-
-        <div class="change-pwd__actions">
-            {{{ SaveBtn }}}
-        </div>
-    </form>
-</main>`;
+              <form>
+                <div id="avatar" name="avatar" class="img-centered">
+                  {{{ Avatar }}}
+                </div>
+                <div>
+                  {{{ OldPasswordField }}}
+                  {{{ NewPasswordField }}}
+                  {{{ RepeatNewPasswordField }}}
+                </div>
+                <div class="change-pwd__actions">
+                  {{{ SaveBtn }}}
+                </div>
+              </form>
+            </main>`;
   }
 }

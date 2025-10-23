@@ -210,7 +210,6 @@ export default class Block {
   }
 
   private _render(): void {
-    console.log('Render');
     const propsAndStubs: BlockProps = { ...this.props };
     const tmpId = Math.floor(100000 + Math.random() * 900000);
 

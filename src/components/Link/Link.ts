@@ -1,11 +1,11 @@
 import Block, { BlockProps } from '../../framework/Block';
 
 export interface LinkProps extends BlockProps { // наследуем от BlockProps
-  href: string
-  class?: string
-  datapage?: string
-  text: string
-  onClick?: (e: Event) => void
+  href: string;
+  class?: string;
+  datapage?: string;
+  text: string;
+  onClick?: (e: Event) => void;
 }
 
 export default class Link extends Block {
@@ -24,7 +24,7 @@ export default class Link extends Block {
     this.setProps({
       attr: {
         class: '',
-      }
+      },
     });
   }
 

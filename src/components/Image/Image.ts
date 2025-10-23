@@ -1,12 +1,12 @@
-import Block, {BlockProps} from '../../framework/Block';
+import Block, { BlockProps } from '../../framework/Block';
 
 import './image.pcss';
 
 export interface ImageProps extends BlockProps {
-  class?: string,
-  size?: string | number,
-  src?: string,
-  alt?: string,
+  class?: string;
+  size?: string | number;
+  src?: string;
+  alt?: string;
 }
 
 export class Image extends Block {

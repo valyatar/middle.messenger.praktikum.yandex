@@ -1,11 +1,11 @@
-import Block, {BlockProps} from '../../framework/Block';
+import Block, { BlockProps } from '../../framework/Block';
 
 export interface InputProps extends BlockProps {
-  name: string
-  type?: string
-  placeholder?: string
-  value?: string
-  onClick?: (e: Event) => void
+  name: string;
+  type?: string;
+  placeholder?: string;
+  value?: string;
+  onClick?: (e: Event) => void;
 }
 
 export default class Input extends Block {

@@ -1,4 +1,4 @@
-import Block, {BlockProps} from '../../framework/Block';
+import Block, { BlockProps } from '../../framework/Block';
 import Link from '../Link/Link';
 
 import './footer.pcss';

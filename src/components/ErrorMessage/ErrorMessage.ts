@@ -1,7 +1,7 @@
-import Block, {BlockProps} from '../../framework/Block';
+import Block, { BlockProps } from '../../framework/Block';
 
 export interface ErrorMessageProps extends BlockProps {
-  message: string
+  message: string;
 }
 
 export default class ErrorMessage extends Block {

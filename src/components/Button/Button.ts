@@ -1,10 +1,10 @@
-import Block, {BlockProps} from '../../framework/Block';
+import Block, { BlockProps } from '../../framework/Block';
 
 export interface ButtonProps extends BlockProps {
-  id: string
-  text?: string
-  type?: 'button' | 'submit' | 'reset'
-  disabled?: boolean
+  id: string;
+  text?: string;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
 }
 
 export default class Button extends Block {

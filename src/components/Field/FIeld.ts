@@ -1,4 +1,4 @@
-import Block, {BlockProps} from '../../framework/Block';
+import Block, { BlockProps } from '../../framework/Block';
 import Input from '../Input/Input';
 
 import './field.pcss';
@@ -7,9 +7,9 @@ export interface FieldProps extends BlockProps {
   id: string;
   name: string;
   label: string;
-  value: string
-  readonly?: boolean
-  href?: string
+  value: string;
+  readonly?: boolean;
+  href?: string;
 }
 
 export class Field extends Block {

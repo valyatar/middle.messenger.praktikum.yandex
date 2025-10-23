@@ -10,8 +10,8 @@
     "strictNullChecks": true,
 //    "allowSyntheticDefaultImports": true
   },
-//  "include": [
-//    "src/**/*.ts",
-//    ".eslintrc.cjs"
-//  ]
+  "include": [
+    "src/**/*.ts",
+    ".eslintrc.cjs"
+  ]
 }

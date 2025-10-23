@@ -15,10 +15,16 @@
     "dev": "vite",
     "build": "vite build",
     "start": "vite build && node server.cjs",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
     "autoprefixer": "^10.4.19",
+    "eslint": "^8.56.0",
+    "eslint-config-airbnb-typescript": "^18.0.0",
     "postcss": "^8.4.40",
     "postcss-preset-env": "^9.6.0",
     "typescript": "^5.5.4",

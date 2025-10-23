@@ -40,7 +40,7 @@ export default class Footer extends Block {
 
     const props: BlockProps = {};
 
-    linksData.forEach(({ name, datapage, text, onClick }) => {
+    linksData.forEach(({ name, datapage, text }) => {
       props[name] = new Link({
         href: '#',
         datapage,

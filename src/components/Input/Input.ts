@@ -1,10 +1,14 @@
 import Block, { BlockProps } from '../../framework/Block';
+import { validateField } from '../../helpers/validation';
+
+import './input.pcss';
 
 export interface InputProps extends BlockProps {
   name: string;
   type?: string;
   placeholder?: string;
   value?: string;
+  error?: boolean;
   onClick?: (e: Event) => void;
 }
 
@@ -13,21 +17,29 @@ export default class Input extends Block {
     super({
       ...props,
       events: {
+        blur: (e: Event) => this.handleBlur(e),
         click: (e: Event) => {
-          // this.changeStyles();
           props.onClick?.(e);
         },
       },
-      // attr: {
-      //     // class: 'footer-link',
-      // },
     });
   }
 
-  changeStyles() {
-    this.setProps({ attr: {
-      class: '',
-    } });
+  public markAsInvalid(): void {
+    this.setAttributes({ class: 'input input--error' });
+  }
+
+  public markAsValid(): void {
+    this.setAttributes({ class: 'input' });
+  }
+
+  private handleBlur(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const isValid = validateField(input.name, input.value);
+
+    this.setAttributes({
+      class: isValid ? 'input' : 'input input__error',
+    });
   }
 
   render() {

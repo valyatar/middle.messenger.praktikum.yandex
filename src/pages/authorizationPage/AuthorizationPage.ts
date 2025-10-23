@@ -2,6 +2,7 @@ import Block from '../../framework/Block';
 import Link from '../../components/Link/Link';
 import Input from '../../components/Input/Input';
 import Button from '../../components/Button/Button';
+import { validateForm } from '../../helpers/validation';
 
 export class AuthorizationPage extends Block {
   constructor() {
@@ -41,19 +42,15 @@ export class AuthorizationPage extends Block {
 
   private handleSubmit(event: Event): void {
     event.preventDefault();
+    const form = event.target as HTMLFormElement;
+    const validationResult = validateForm(form);
 
-    const formData = new FormData(event.target as HTMLFormElement);
-    const data: Record<string, string> = {};
-
-    for (const [key, value] of formData.entries()) {
-      if (typeof value === 'string') {
-        data[key] = value;
-      } else {
-        data[key] = String(value);
-      }
+    if (!validationResult.isValid) {
+      console.log('Ошибка валидации');
+      return;
     }
 
-    console.log('Данные со страницы авторизации:', data);
+    console.log('Данные со страницы авторизации:', validationResult.data);
   }
 
   render(): string {

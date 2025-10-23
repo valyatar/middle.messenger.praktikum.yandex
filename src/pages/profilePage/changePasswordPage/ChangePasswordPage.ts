@@ -4,6 +4,7 @@ import { Image } from '../../../components/Image/Image';
 import Button from '../../../components/Button/Button';
 
 import '../profile.pcss';
+import { validateForm } from '../../../helpers/validation';
 
 export class ChangePasswordPage extends Block {
   constructor() {
@@ -45,18 +46,15 @@ export class ChangePasswordPage extends Block {
   private handleSubmit(event: Event): void {
     event.preventDefault();
 
-    const formData = new FormData(event.target as HTMLFormElement);
-    const data: Record<string, string> = {};
+    const form = event.target as HTMLFormElement;
+    const validationResult = validateForm(form);
 
-    for (const [key, value] of formData.entries()) {
-      if (typeof value === 'string') {
-        data[key] = value;
-      } else {
-        data[key] = String(value);
-      }
+    if (!validationResult.isValid) {
+      console.log('Ошибка валидации');
+      return;
     }
 
-    console.log('Данные со страницы смены пароля:', data);
+    console.log('Данные со страницы смены пароля:', validationResult.data);
   }
 
   render(): string {

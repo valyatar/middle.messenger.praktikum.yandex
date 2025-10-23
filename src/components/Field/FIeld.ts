@@ -1,24 +1,24 @@
 import Block from '../../framework/Block';
 
 import './field.pcss';
-import Input from "../Input/Input";
+import Input from '../Input/Input';
 
 export class Field extends Block {
-    constructor(props: any) {
-        super({
-            ...props,
-            FieldInput: new Input({
-                id: props.id,
-                name: props.name,
-                type: "",
-                placeholder: props.label,
-                value: props.value
-            }),
-        });
-    }
+  constructor(props: any) {
+    super({
+      ...props,
+      FieldInput: new Input({
+        id: props.id,
+        name: props.name,
+        type: '',
+        placeholder: props.label,
+        value: props.value,
+      }),
+    });
+  }
 
-    render(): string {
-        return `
+  render(): string {
+    return `
 {{#if readonly}}
   <div class="info-row" role="group" aria-label="{{label}}">
     <span class="info-row__label">{{label}}</span>
@@ -38,6 +38,6 @@ export class Field extends Block {
     </div>
   </div>
 {{/if}}
-`
-    }
+`;
+  }
 }

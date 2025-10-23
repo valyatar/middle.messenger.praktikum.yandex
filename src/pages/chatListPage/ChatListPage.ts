@@ -1,28 +1,28 @@
 import Block from '../../framework/Block';
-import Input from "../../components/Input/Input";
+import Input from '../../components/Input/Input';
 
 import './chatList.pcss';
 
 export class ChatListPage extends Block {
-    constructor() {
-        super({
-            SearchInput: new Input({
-                id: "search",
-                name: "search",
-                type: "text",
-                placeholder: "Поиск",
-            }),
-            MessageInput: new Input({
-                id: "message",
-                name: "message",
-                type: "text",
-                placeholder: "Сообщение",
-            }),
-        });
-    }
+  constructor() {
+    super({
+      SearchInput: new Input({
+        id: 'search',
+        name: 'search',
+        type: 'text',
+        placeholder: 'Поиск',
+      }),
+      MessageInput: new Input({
+        id: 'message',
+        name: 'message',
+        type: 'text',
+        placeholder: 'Сообщение',
+      }),
+    });
+  }
 
-    render(): string {
-        return `<main class="chat-list">
+  render(): string {
+    return `<main class="chat-list">
     <div class="chat-layout">
         <aside class="left">
             <div class="left__search">
@@ -38,6 +38,6 @@ export class ChatListPage extends Block {
             </div>
         </main>
     </div>
-</main>`
-    }
+</main>`;
+  }
 }

@@ -1,30 +1,30 @@
-import Block from "../../framework/Block";
+import Block from '../../framework/Block';
 
 export default class Button extends Block {
-    constructor(props: any) {
-        super({
-            ...props,
-            events: {
-                click: (e: Event) => {
-                    // this.changeStyles();
-                    // props.onClick(e);
-                    console.log('→ Авторизация');
-                },
-            },
-            // attr: {
-            //     // class: 'footer-link',
-            // },
-        });
-    }
+  constructor(props: any) {
+    super({
+      ...props,
+      events: {
+        click: (e: Event) => {
+          // this.changeStyles();
+          // props.onClick(e);
+          console.log(e);
+        },
+      },
+      // attr: {
+      //     // class: 'footer-link',
+      // },
+    });
+  }
 
-    changeStyles() {
-        this.setProps({ attr: {
-                class: '',
-            } });
-    }
+  changeStyles() {
+    this.setProps({ attr: {
+      class: '',
+    } });
+  }
 
-    render() {
-        return `<button 
+  render() {
+    return `<button 
   id="{{id}}" 
   class="button"  
   type="{{#if type}}{{type}}{{else}}button{{/if}}"
@@ -32,5 +32,5 @@ export default class Button extends Block {
 >
   {{text}}
 </button>`;
-    }
+  }
 }

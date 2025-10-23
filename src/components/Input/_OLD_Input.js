@@ -1,1 +1,0 @@
-export default `<input name="{{name}}" type="{{type}}" placeholder="{{placeholder}}" value="{{value}}" class="input">`;

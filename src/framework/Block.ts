@@ -22,10 +22,15 @@ export default class Block {
   };
 
   protected _element: HTMLElement | null = null;
+
   protected _id: number = Math.floor(100000 + Math.random() * 900000);
+
   protected props: BlockProps;
+
   protected children: Record<string, Block>;
+
   protected lists: Record<string, Block[]>;
+
   protected eventBus: () => EventBus;
 
   private eventCallbacks: Map<string, EventCallback> = new Map();
@@ -160,7 +165,7 @@ export default class Block {
       if (value instanceof Block) {
         children[key] = value;
       } else if (Array.isArray(value) && value.every(item => item instanceof Block)) {
-        lists[key] = value as Block[];
+        lists[key] = value;
       } else {
         (props as Record<string, unknown>)[key] = value;
       }

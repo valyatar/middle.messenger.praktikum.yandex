@@ -1,5 +1,5 @@
 import Block from '../../../framework/Block';
-import {Field} from "../../../components/Field/FIeld";
+import { Field } from '../../../components/Field/FIeld';
 import { Image } from '../../../components/Image/Image';
 import Button from '../../../components/Button/Button';
 

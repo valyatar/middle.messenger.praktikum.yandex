@@ -38,6 +38,7 @@ module.exports = {
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/ban-ts-comment': 'off',
       '@typescript-eslint/quotes': ['error', 'single'],
-      'eol-last': ['error', 'always']
+      'eol-last': ['error', 'always'],
+      'object-curly-spacing': ['error', 'always']
     },
 };

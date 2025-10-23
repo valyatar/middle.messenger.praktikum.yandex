@@ -62,7 +62,9 @@ export default class App {
     }
 
     this.pageContainer.innerHTML = '';
-    this.pageContainer.appendChild(pageHTML.getContent());
+    if (pageHTML) {
+      this.pageContainer.appendChild(pageHTML.getContent());
+    }
 
     this.addEventListeners();
   }
@@ -82,9 +84,13 @@ export default class App {
 
     const footerLinks = document.querySelectorAll('.footer-link');
     footerLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
+      link.addEventListener('click', (e: MouseEvent) => {
         e.preventDefault();
-        this.changePage(e.target.dataset.page);
+        const target = e.target as HTMLElement;
+        const page = target.closest('a')?.dataset.page;
+        if (page) {
+          this.changePage(page);
+        }
       });
     });
   }

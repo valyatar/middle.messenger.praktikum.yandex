@@ -1,36 +1,34 @@
-import Block from '../../framework/Block';
+import Block, {BlockProps} from '../../framework/Block';
+
+export interface ButtonProps extends BlockProps {
+  id: string
+  text?: string
+  type?: 'button' | 'submit' | 'reset'
+  disabled?: boolean
+}
 
 export default class Button extends Block {
-  constructor(props: any) {
+  constructor(props: ButtonProps) {
     super({
       ...props,
       events: {
         click: (e: Event) => {
-          // this.changeStyles();
-          // props.onClick(e);
           console.log(e);
         },
       },
-      // attr: {
-      //     // class: 'footer-link',
-      // },
     });
   }
 
-  changeStyles() {
-    this.setProps({ attr: {
-      class: '',
-    } });
-  }
-
   render() {
-    return `<button 
-  id="{{id}}" 
-  class="button"  
-  type="{{#if type}}{{type}}{{else}}button{{/if}}"
-  {{#if disabled}}disabled{{/if}}
->
-  {{text}}
-</button>`;
+    return (
+      `<button 
+          id="{{id}}" 
+          class="button"  
+          type="{{#if type}}{{type}}{{else}}button{{/if}}"
+          {{#if disabled}}disabled{{/if}}
+        >
+          {{text}}
+        </button>`
+    );
   }
 }

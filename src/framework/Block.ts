@@ -1,8 +1,16 @@
 import EventBus, { EventCallback } from './EventBus';
 import Handlebars from 'handlebars';
 
-interface BlockProps {
-  [key: string]: any;
+export interface BlockProps {
+  id?: string;
+  children?: Record<string, Block>;
+  attr?: {
+    [key: string]: string | number | boolean | undefined;
+  };
+  events?: {
+    [key: string]: (e: Event) => void;
+  };
+  [key: string]: unknown;
 }
 
 export default class Block {
@@ -21,17 +29,19 @@ export default class Block {
 
   protected children: Record<string, Block>;
 
-  protected lists: Record<string, any[]>;
+  protected lists: Record<string, Block[]>;
 
   protected eventBus: () => EventBus;
 
   constructor(propsWithChildren: BlockProps = {}) {
     const eventBus = new EventBus();
     const { props, children, lists } = this._getChildrenPropsAndProps(propsWithChildren);
+
     this.props = this._makePropsProxy({ ...props });
     this.children = children;
-    this.lists = this._makePropsProxy({ ...lists });
+    this.lists = lists;
     this.eventBus = () => eventBus;
+
     this._registerEvents(eventBus);
     eventBus.emit(Block.EVENTS.INIT);
   }
@@ -39,7 +49,7 @@ export default class Block {
   private _addEvents(): void {
     const { events = {} } = this.props;
     Object.keys(events).forEach(eventName => {
-      if (this._element) {
+      if (this._element && events[eventName]) {
         this._element.addEventListener(eventName, events[eventName]);
       }
     });
@@ -58,7 +68,9 @@ export default class Block {
 
   private _componentDidMount(): void {
     this.componentDidMount();
-    Object.values(this.children).forEach(child => {child.dispatchComponentDidMount();});
+    Object.values(this.children).forEach(child => {
+      child.dispatchComponentDidMount();
+    });
   }
 
   protected componentDidMount(): void {}
@@ -75,7 +87,6 @@ export default class Block {
     this._render();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected componentDidUpdate(oldProps: BlockProps, newProps: BlockProps): boolean {
     console.log(oldProps, newProps);
     return true;
@@ -84,20 +95,19 @@ export default class Block {
   private _getChildrenPropsAndProps(propsAndChildren: BlockProps): {
     children: Record<string, Block>,
     props: BlockProps,
-    lists: Record<string, any[]>
+    lists: Record<string, Block[]>
   } {
     const children: Record<string, Block> = {};
     const props: BlockProps = {};
-    const lists: Record<string, any[]> = {};
+    const lists: Record<string, Block[]> = {};
 
     Object.entries(propsAndChildren).forEach(([key, value]) => {
       if (value instanceof Block) {
         children[key] = value;
-      } else if (Array.isArray(value)) {
-        lists[key] = value;
+      } else if (Array.isArray(value) && value.every(item => item instanceof Block)) {
+        lists[key] = value as Block[];
       } else {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        props[key] = value;
+        (props as Record<string, unknown>)[key] = value;
       }
     });
 
@@ -106,35 +116,32 @@ export default class Block {
 
   protected addAttributes(): void {
     const { attr = {} } = this.props;
-
     Object.entries(attr).forEach(([key, value]) => {
-      if (this._element) {
-        this._element.setAttribute(key, value as string);
+      if (this._element && value !== undefined) {
+        this._element.setAttribute(key, String(value));
       }
     });
   }
 
-  protected setAttributes(attr: any): void {
+  protected setAttributes(attr: { [key: string]: string | number | boolean }): void {
     Object.entries(attr).forEach(([key, value]) => {
       if (this._element) {
-        this._element.setAttribute(key, value as string);
+        this._element.setAttribute(key, String(value));
       }
     });
   }
 
-  public setProps = (nextProps: BlockProps): void => {
+  public setProps = (nextProps: Partial<BlockProps>): void => {
     if (!nextProps) {
       return;
     }
-
     Object.assign(this.props, nextProps);
   };
 
-  public setLists = (nextList: Record<string, any[]>): void => {
+  public setLists = (nextList: Record<string, Block[]>): void => {
     if (!nextList) {
       return;
     }
-
     Object.assign(this.lists, nextList);
   };
 
@@ -144,18 +151,19 @@ export default class Block {
 
   private _render(): void {
     console.log('Render');
-    const propsAndStubs = { ...this.props };
-    const tmpId =  Math.floor(100000 + Math.random() * 900000);
+    const propsAndStubs: BlockProps = { ...this.props };
+    const tmpId = Math.floor(100000 + Math.random() * 900000);
+
     Object.entries(this.children).forEach(([key, child]) => {
       propsAndStubs[key] = `<div data-id="${child._id}"></div>`;
     });
 
-    Object.entries(this.lists).forEach(([key]) => {
+    Object.entries(this.lists).forEach(entry => {
+      const key = entry[0];
       propsAndStubs[key] = `<div data-id="__l_${tmpId}"></div>`;
     });
 
     const fragment = this._createDocumentElement('template');
-    //fixme - не через innerHTML
     fragment.innerHTML = Handlebars.compile(this.render())(propsAndStubs);
 
     Object.values(this.children).forEach(child => {
@@ -165,15 +173,12 @@ export default class Block {
       }
     });
 
-    Object.entries(this.lists).forEach(([, child]) => {
+    Object.entries(this.lists).forEach(([, children]) => {
       const listCont = this._createDocumentElement('template');
-      child.forEach(item => {
-        if (item instanceof Block) {
-          listCont.content.append(item.getContent());
-        } else {
-          listCont.content.append(`${item}`);
-        }
+      children.forEach(item => {
+        listCont.content.append(item.getContent());
       });
+
       const stub = fragment.content.querySelector(`[data-id="__l_${tmpId}"]`);
       if (stub) {
         stub.replaceWith(listCont.content);
@@ -200,22 +205,21 @@ export default class Block {
     return this._element;
   }
 
-  private _makePropsProxy(props: any): any {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const self = this;
-
+  private _makePropsProxy(props: BlockProps): BlockProps {
     return new Proxy(props, {
-      get(target: any, prop: string) {
+      get: (target: BlockProps, prop: string): unknown => {
         const value = target[prop];
-        return typeof value === 'function' ? value.bind(target) : value;
+        return typeof value === 'function' ? (value as (...args: unknown[]) => unknown).bind(target) : value;
       },
-      set(target: any, prop: string, value: any) {
+
+      set: (target: BlockProps, prop: string, value: unknown): boolean => {
         const oldTarget = { ...target };
         target[prop] = value;
-        self.eventBus().emit(Block.EVENTS.FLOW_CDU, oldTarget, target);
+        this.eventBus().emit(Block.EVENTS.FLOW_CDU, oldTarget, target);
         return true;
       },
-      deleteProperty() {
+
+      deleteProperty: (): never => {
         throw new Error('No access');
       },
     });
@@ -225,8 +229,6 @@ export default class Block {
     return document.createElement(tagName) as HTMLTemplateElement;
   }
 
-
-  // возможно переделать - удалять элемент из дом-а
   public show(): void {
     const content = this.getContent();
     if (content) {

@@ -1,5 +1,6 @@
-import Block from '../../framework/Block';
+import Block, {BlockProps} from '../../framework/Block';
 import Link from '../Link/Link';
+
 import './footer.pcss';
 
 export default class Footer extends Block {
@@ -9,7 +10,7 @@ export default class Footer extends Block {
         name: 'AuthorizationLink',
         datapage: 'authorization',
         text: 'Авторизация',
-        onClick:  (event) => {
+        onClick: (event: Event) => {
           console.log(event);
         },
       },
@@ -17,7 +18,7 @@ export default class Footer extends Block {
         name: 'RegistrationLink',
         datapage: 'registration',
         text: 'Регистрация',
-        onClick: (event) => {
+        onClick: (event: Event) => {
           console.log(event);
         },
       },
@@ -25,7 +26,7 @@ export default class Footer extends Block {
         name: 'ChatListLink',
         datapage: 'chatList',
         text: 'Список чатов',
-        onClick: (event) => {
+        onClick: (event: Event) => {
           console.log(event);
         },
       },
@@ -33,7 +34,7 @@ export default class Footer extends Block {
         name: 'ProfileSettingsLink',
         datapage: 'profileSettings',
         text: 'Настройки пользователя',
-        onClick: (event) => {
+        onClick: (event: Event) => {
           console.log(event);
         },
       },
@@ -41,7 +42,7 @@ export default class Footer extends Block {
         name: 'ErrorLink404',
         datapage: 'error404',
         text: '404',
-        onClick: (event) => {
+        onClick: (event: Event) => {
           console.log(event);
         },
       },
@@ -49,27 +50,25 @@ export default class Footer extends Block {
         name: 'ErrorLink500',
         datapage: 'error500',
         text: '500',
-        onClick: (event) => {
+        onClick: (event: Event) => {
           console.log(event);
         },
       },
     ];
 
-    const children: Record<string, Block> = {};
+    const props: BlockProps = {};
 
     linksData.forEach(({ name, datapage, text, onClick }) => {
-      children[name] = new Link({
+      props[name] = new Link({
         href: '#',
         datapage,
         text,
-        onClick: (event) => onClick.call(this, event),
+        onClick: (event: Event) => onClick(event),
         attr: { class: 'footer-link' },
       });
     });
 
-    super({
-      ...children,
-    });
+    super(props);
   }
 
   render() {
@@ -83,20 +82,16 @@ export default class Footer extends Block {
     ];
 
     return `
-			<footer class="footer">
-				<nav class="footer__nav" aria-label="Навигация по сайту">
-					<ul class="footer__list">
-						${linkNames
-    .map(
-      (name) => `
-								<li class="footer__item">
-									{{{ ${name} }}}
-								</li>`,
-    )
-    .join('')}
-					</ul>
-				</nav>
-			</footer>
-		`;
+      <footer class="footer">
+    <nav class="footer__nav" aria-label="Навигация по сайту">
+      <ul class="footer__list">
+        ${linkNames.map((name) => `
+          <li class="footer__item">
+            {{{ ${name} }}}
+          </li>`).join('')}
+      </ul>
+    </nav>
+    </footer>
+  `;
   }
 }

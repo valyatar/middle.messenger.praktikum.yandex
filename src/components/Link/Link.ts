@@ -1,25 +1,31 @@
-import Block from '../../framework/Block';
+import Block, { BlockProps } from '../../framework/Block';
+
+export interface LinkProps extends BlockProps { // наследуем от BlockProps
+  href: string
+  class?: string
+  datapage?: string
+  text: string
+  onClick?: (e: Event) => void
+}
 
 export default class Link extends Block {
-  constructor(props: any) {
+  constructor(props: LinkProps) {
     super({
       ...props,
       events: {
         click: (e: Event) => {
-          // this.changeStyles();
-          props.onClick(e);
+          props.onClick?.(e);
         },
       },
-      // attr: {
-      //     // class: 'footer-link',
-      // },
     });
   }
 
   changeStyles() {
-    this.setProps({ attr: {
-      class: '',
-    } });
+    this.setProps({
+      attr: {
+        class: '',
+      }
+    });
   }
 
   render() {

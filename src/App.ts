@@ -95,7 +95,7 @@ export default class App {
     });
   }
 
-  changePage(page) {
+  changePage(page: string) {
     this.state.currentPage = page;
     this.render();
   }

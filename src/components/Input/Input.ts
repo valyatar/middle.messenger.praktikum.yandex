@@ -25,14 +25,6 @@ export default class Input extends Block {
     });
   }
 
-  public markAsInvalid(): void {
-    this.setAttributes({ class: 'input input--error' });
-  }
-
-  public markAsValid(): void {
-    this.setAttributes({ class: 'input' });
-  }
-
   private handleBlur(event: Event): void {
     const input = event.target as HTMLInputElement;
     const isValid = validateField(input.name, input.value);

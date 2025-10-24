@@ -222,8 +222,18 @@ export default class Block {
       propsAndStubs[key] = `<div data-id="__l_${tmpId}"></div>`;
     });
 
+    const template = Handlebars.compile(this.render());
+    const htmlString = template(propsAndStubs);
+
     const fragment = this._createDocumentElement('template');
-    fragment.innerHTML = Handlebars.compile(this.render())(propsAndStubs);
+
+    const parser = new DOMParser();
+    const parsedDoc = parser.parseFromString(htmlString, 'text/html');
+    const bodyElements = parsedDoc.body.children;
+
+    Array.from(bodyElements).forEach(element => {
+      fragment.content.appendChild(element.cloneNode(true));
+    });
 
     Object.values(this.children).forEach(child => {
       const stub = fragment.content.querySelector(`[data-id="${child._id}"]`);

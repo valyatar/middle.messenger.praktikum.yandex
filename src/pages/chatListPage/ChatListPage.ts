@@ -5,6 +5,8 @@ import Button from '../../components/Button/Button';
 import { validateForm } from '../../helpers/validation';
 import { arrowRightIcon } from '../../../public/static/icons/arrowRight';
 import { ChatListPageProps } from '../../types/app';
+import { ChatItem } from '../../components/ChatItem/ChatItem';
+import { Message } from '../../components/MessageItem/Message';
 
 export class ChatListPage extends Block {
 
@@ -15,6 +17,17 @@ export class ChatListPage extends Block {
         name: 'search',
         type: 'text',
         placeholder: 'Поиск',
+      }),
+      ChatItem: new ChatItem({
+        id: '1',
+        title: 'Тестовый чатик',
+        lastMessage: 'последнее сообщение',
+      }),
+      Message: new Message({
+        id: '1',
+        text: 'тестовое сообщение',
+        time: '23:59',
+        isOwn: true,
       }),
       MessageInput: new Input({
         id: 'message',
@@ -56,11 +69,15 @@ export class ChatListPage extends Block {
             <div class="left__search">
                 {{{ SearchInput }}}
             </div>
-            <div class="left__list"><!-- список чатов --></div>
+            <div class="left__list">
+                {{{ ChatItem }}}
+            </div>
         </aside>
 
         <main class="right">
-            <div class="right__messages"><!-- сообщения --></div>
+            <div class="right__messages">
+                {{{ Message }}}
+            </div>
             <div class="right__composer">
                 <form>
                   <div class="message_container">

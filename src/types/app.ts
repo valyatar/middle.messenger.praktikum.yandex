@@ -1,3 +1,5 @@
+import {BlockProps} from "../framework/Block";
+
 export interface LoginData {
   login: string;
   password: string;
@@ -81,32 +83,32 @@ export interface AppWithControllers {
   changePage: (page: string) => void;
 }
 
-export interface AuthorizationPageProps {
+export interface AuthorizationPageProps extends BlockProps{
   app: AppWithControllers;
   onSuccess?: () => void;
 }
 
-export interface RegisterPageProps {
+export interface RegisterPageProps extends BlockProps {
   app: AppWithControllers;
   onSuccess?: () => void;
 }
 
-export interface ChatListPageProps {
+export interface ChatListPageProps extends BlockProps {
   app: AppWithControllers;
   onLogout?: () => void;
 }
 
-export interface ProfilePageProps {
+export interface ProfilePageProps extends BlockProps {
   app: AppWithControllers;
   onBack?: () => void;
 }
 
-export interface ChangePasswordPageProps {
+export interface ChangePasswordPageProps extends BlockProps {
   app: AppWithControllers;
   onBack?: () => void;
   onSuccess?: () => void;
 }
 
-export interface ErrorPageProps {
+export interface ErrorPageProps extends BlockProps {
   app?: AppWithControllers;
 }

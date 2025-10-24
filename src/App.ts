@@ -91,10 +91,14 @@ export default class App implements AppWithControllers {
         });
         break;
       case 'error404':
-        pageHTML = new ErrorPage404();
+        pageHTML = new ErrorPage404({
+          app: this,
+        });
         break;
       case 'error500':
-        pageHTML = new ErrorPage500();
+        pageHTML = new ErrorPage500({
+          app: this,
+        });
         break;
     }
 

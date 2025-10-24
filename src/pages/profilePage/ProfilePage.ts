@@ -2,11 +2,12 @@ import Block from '../../framework/Block';
 import { Image } from '../../components/Image/Image';
 import { Field } from '../../components/Field/FIeld';
 import Link from '../../components/Link/Link';
+import { ProfilePageProps } from '../../types/app';
 
 import './profile.pcss';
 
 export class ProfilePage extends Block {
-  constructor() {
+  constructor(props: ProfilePageProps) {
     super({
       Avatar: new Image({
         size:'120px',
@@ -86,6 +87,8 @@ export class ProfilePage extends Block {
         id: '',
       }),
     });
+
+    this.props = props;
   }
 
   render(): string {

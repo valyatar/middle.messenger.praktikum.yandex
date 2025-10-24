@@ -7,18 +7,33 @@ import { ChangePasswordPage } from './pages/profilePage/changePasswordPage/Chang
 import ErrorPage404 from './pages/errorPages/error404/ErrorPage404';
 import ErrorPage500 from './pages/errorPages/error500/ErrorPage500';
 
+import { AuthService } from './services/AuthService';
+import { UserService } from './services/UserService';
+import { ChatsService } from './services/ChatsService';
+import { AuthController } from './controllers/AuthController';
+import { UserController } from './controllers/UserController';
+import { ChatController } from './controllers/ChatController';
+
+import { AppWithControllers } from './types/app';
+
 interface AppState {
   currentPage: string;
 }
 
-export default class App {
+export default class App implements AppWithControllers {
   private appElement: HTMLElement | null;
 
-  private state: AppState;
+  private readonly state: AppState;
 
   private footer: Footer;
 
-  private pageContainer: HTMLElement;
+  private readonly pageContainer: HTMLElement;
+
+  public authController: AuthController;
+
+  public userController: UserController;
+
+  public chatController: ChatController;
 
   constructor() {
     this.state = {
@@ -32,6 +47,18 @@ export default class App {
 
     this.appElement?.appendChild(this.pageContainer);
     this.appElement?.appendChild(this.footer.getContent());
+
+    this.initializeMVC();
+  }
+
+  private initializeMVC() {
+    const authService = new AuthService();
+    const userService = new UserService();
+    const chatService = new ChatsService();
+
+    this.authController = new AuthController(authService);
+    this.userController = new UserController(userService);
+    this.chatController = new ChatController(chatService);
   }
 
   render() {
@@ -39,19 +66,29 @@ export default class App {
     let pageHTML;
     switch (currentPage) {
       case 'authorization':
-        pageHTML = new AuthorizationPage();
+        pageHTML = new AuthorizationPage({
+          app: this,
+        });
         break;
       case 'registration':
-        pageHTML = new RegisterPage();
+        pageHTML = new RegisterPage({
+          app: this,
+        });
         break;
       case 'chatList':
-        pageHTML = new ChatListPage();
+        pageHTML = new ChatListPage({
+          app: this,
+        });
         break;
       case 'profileSettings':
-        pageHTML = new ProfilePage();
+        pageHTML = new ProfilePage({
+          app: this,
+        });
         break;
       case 'changePassword':
-        pageHTML = new ChangePasswordPage();
+        pageHTML = new ChangePasswordPage({
+          app: this,
+        });
         break;
       case 'error404':
         pageHTML = new ErrorPage404();
@@ -67,6 +104,11 @@ export default class App {
     }
 
     this.addEventListeners();
+  }
+
+  changePage(page: string) {
+    this.state.currentPage = page;
+    this.render();
   }
 
   addEventListeners() {
@@ -93,10 +135,5 @@ export default class App {
         }
       });
     });
-  }
-
-  changePage(page: string) {
-    this.state.currentPage = page;
-    this.render();
   }
 }

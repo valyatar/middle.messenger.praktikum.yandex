@@ -3,12 +3,11 @@ import Link from '../../components/Link/Link';
 import Input from '../../components/Input/Input';
 import Button from '../../components/Button/Button';
 import { validateForm } from '../../helpers/validation';
-import { AuthService } from '../../services/AuthService';
+import { RegisterPageProps } from '../../types/app';
+
 
 export class RegisterPage extends Block {
-  private authService: AuthService;
-
-  constructor() {
+  constructor(props: RegisterPageProps) {
     super({
       EmailInput: new Input({
         id: 'email',
@@ -72,7 +71,7 @@ export class RegisterPage extends Block {
       },
     });
 
-    this.authService = new AuthService();
+    this.props = props;
   }
 
   private handleSubmit(event: Event): void {

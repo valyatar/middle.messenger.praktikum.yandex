@@ -1,34 +1,5 @@
 import { HTTPTransport } from './HTTPTransport';
-
-
-export interface UserProfileData {
-  first_name: string;
-  second_name: string;
-  display_name: string;
-  login: string;
-  email: string;
-  phone: string;
-}
-
-export interface ChangePasswordData {
-  oldPassword: string;
-  newPassword: string;
-}
-
-export interface User {
-  id: number;
-  first_name: string;
-  second_name: string;
-  display_name: string;
-  login: string;
-  email: string;
-  phone: string;
-  avatar: string;
-}
-
-export interface SearchUserData {
-  login: string;
-}
+import { ChangePasswordData, User, UserProfileData } from '../types/app';
 
 export class UserService {
   private http: HTTPTransport;

@@ -1,18 +1,5 @@
 import { HTTPTransport } from './HTTPTransport';
-
-export interface Chat {
-  id: number;
-  title: string;
-  avatar?: string;
-  unread_count?: number;
-  last_message?: string;
-}
-
-
-export interface ChatUserData {
-  users: number[];
-  chatId: number;
-}
+import { Chat, ChatUserData } from '../types/app';
 
 export class ChatsService {
   private http: HTTPTransport;

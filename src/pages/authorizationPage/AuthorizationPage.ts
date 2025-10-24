@@ -3,12 +3,10 @@ import Link from '../../components/Link/Link';
 import Input from '../../components/Input/Input';
 import Button from '../../components/Button/Button';
 import { validateForm } from '../../helpers/validation';
-import { AuthService } from '../../services/AuthService';
+import { AuthorizationPageProps } from '../../types/app';
 
 export class AuthorizationPage extends Block {
-  private authService: AuthService;
-
-  constructor() {
+  constructor(props: AuthorizationPageProps) {
     super({
       LoginInput: new Input({
         id: 'login',
@@ -42,7 +40,7 @@ export class AuthorizationPage extends Block {
       },
     });
 
-    this.authService = new AuthService();
+    this.props = props;
   }
 
   private handleSubmit(event: Event): void {

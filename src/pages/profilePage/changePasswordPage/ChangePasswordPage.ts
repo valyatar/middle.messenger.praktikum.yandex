@@ -3,14 +3,13 @@ import { Field } from '../../../components/Field/FIeld';
 import { Image } from '../../../components/Image/Image';
 import Button from '../../../components/Button/Button';
 import { validateForm } from '../../../helpers/validation';
-import { UserService } from '../../../services/UserService';
+import { ChangePasswordPageProps } from '../../../types/app';
 
 import '../profile.pcss';
 
 export class ChangePasswordPage extends Block {
-  private userService: UserService;
 
-  constructor() {
+  constructor(props: ChangePasswordPageProps) {
     super({
       Avatar: new Image({
         size: '120px',
@@ -45,7 +44,7 @@ export class ChangePasswordPage extends Block {
       },
     });
 
-    this.userService = new UserService();
+    this.props = props;
   }
 
   private handleSubmit(event: Event): void {

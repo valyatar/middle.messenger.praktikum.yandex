@@ -12,6 +12,7 @@ interface RequestOptions {
   data?: any;
   timeout?: number;
 }
+
 function queryStringify(data: Record<string, any>): string {
   if (typeof data !== 'object') {
     throw new Error('Data must be object');

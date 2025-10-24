@@ -4,12 +4,11 @@ import './chatList.pcss';
 import Button from '../../components/Button/Button';
 import { validateForm } from '../../helpers/validation';
 import { arrowRightIcon } from '../../../public/static/icons/arrowRight';
-import { ChatsService } from '../../services/ChatsService';
+import { ChatListPageProps } from '../../types/app';
 
 export class ChatListPage extends Block {
-  private chatService: ChatsService;
 
-  constructor() {
+  constructor(props: ChatListPageProps) {
     super({
       SearchInput: new Input({
         id: 'search',
@@ -33,7 +32,7 @@ export class ChatListPage extends Block {
       },
     });
 
-    this.chatService = new ChatsService();
+    this.props = props;
   }
 
   private handleSubmit(event: Event): void {

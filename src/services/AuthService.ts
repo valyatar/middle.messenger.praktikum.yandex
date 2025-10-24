@@ -1,5 +1,6 @@
-import { HTTPTransport } from './HTTPTransport';
+import { HTTPTransport } from './http/HTTPTransport';
 import { LoginData, RegisterData, User } from '../types/app';
+import { isSuccessStatus } from './http/HttpStatus';
 
 export class AuthService {
   private http: HTTPTransport;
@@ -16,7 +17,7 @@ export class AuthService {
       },
     });
 
-    if (response.status !== 200) {
+    if (!isSuccessStatus(response.status)) {
       throw new Error(`Login failed with status ${response.status}`);
     }
   }
@@ -29,7 +30,7 @@ export class AuthService {
       },
     });
 
-    if (response.status !== 200) {
+    if (!isSuccessStatus(response.status)) {
       throw new Error(`Registration failed with status ${response.status}`);
     }
 
@@ -39,7 +40,7 @@ export class AuthService {
   async logout(): Promise<void> {
     const response = await this.http.post('/auth/logout');
 
-    if (response.status !== 200) {
+    if (!isSuccessStatus(response.status)) {
       throw new Error(`Logout failed with status ${response.status}`);
     }
   }
@@ -47,7 +48,7 @@ export class AuthService {
   async getUser(): Promise<User> {
     const response = await this.http.get('/auth/user');
 
-    if (response.status !== 200) {
+    if (!isSuccessStatus(response.status)) {
       throw new Error(`Get user failed with status ${response.status}`);
     }
 

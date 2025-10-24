@@ -1,5 +1,6 @@
-import { HTTPTransport } from './HTTPTransport';
+import { HTTPTransport } from './http/HTTPTransport';
 import { Chat, ChatUserData } from '../types/app';
+import { isSuccessStatus } from './http/HttpStatus';
 
 export class ChatsService {
   private http: HTTPTransport;
@@ -11,7 +12,7 @@ export class ChatsService {
   async getChats(): Promise<Chat[]> {
     const response = await this.http.get('/chats');
 
-    if (response.status !== 200) {
+    if (!isSuccessStatus(response.status)) {
       throw new Error(`Get chats failed with status ${response.status}`);
     }
 
@@ -26,7 +27,7 @@ export class ChatsService {
       },
     });
 
-    if (response.status !== 200) {
+    if (!isSuccessStatus(response.status)) {
       throw new Error(`Create chat failed with status ${response.status}`);
     }
   }
@@ -39,7 +40,7 @@ export class ChatsService {
       },
     });
 
-    if (response.status !== 200) {
+    if (!isSuccessStatus(response.status)) {
       throw new Error(`Delete chat failed with status ${response.status}`);
     }
   }
@@ -52,7 +53,7 @@ export class ChatsService {
       },
     });
 
-    if (response.status !== 200) {
+    if (!isSuccessStatus(response.status)) {
       throw new Error(`Add user failed with status ${response.status}`);
     }
   }
@@ -65,7 +66,7 @@ export class ChatsService {
       },
     });
 
-    if (response.status !== 200) {
+    if (!isSuccessStatus(response.status)) {
       throw new Error(`Remove user failed with status ${response.status}`);
     }
   }
@@ -73,7 +74,7 @@ export class ChatsService {
   async getChatToken(chatId: number): Promise<{ token: string }> {
     const response = await this.http.post(`/chats/token/${chatId}`);
 
-    if (response.status !== 200) {
+    if (!isSuccessStatus(response.status)) {
       throw new Error(`Get chat token failed with status ${response.status}`);
     }
 

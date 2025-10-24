@@ -1,4 +1,4 @@
-import { HTTPTransport } from './HTTPTransport';
+import { HTTPTransport } from './http/HTTPTransport';
 import { ChangePasswordData, User, UserProfileData } from '../types/app';
 
 export class UserService {

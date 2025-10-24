@@ -2,11 +2,14 @@ import Block from '../../../framework/Block';
 import { Field } from '../../../components/Field/FIeld';
 import { Image } from '../../../components/Image/Image';
 import Button from '../../../components/Button/Button';
+import { validateForm } from '../../../helpers/validation';
+import { UserService } from '../../../services/UserService';
 
 import '../profile.pcss';
-import { validateForm } from '../../../helpers/validation';
 
 export class ChangePasswordPage extends Block {
+  private userService: UserService;
+
   constructor() {
     super({
       Avatar: new Image({
@@ -41,6 +44,8 @@ export class ChangePasswordPage extends Block {
         submit: (e: Event) => this.handleSubmit(e),
       },
     });
+
+    this.userService = new UserService();
   }
 
   private handleSubmit(event: Event): void {

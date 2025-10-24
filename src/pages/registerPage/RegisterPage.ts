@@ -3,8 +3,11 @@ import Link from '../../components/Link/Link';
 import Input from '../../components/Input/Input';
 import Button from '../../components/Button/Button';
 import { validateForm } from '../../helpers/validation';
+import { AuthService } from '../../services/AuthService';
 
 export class RegisterPage extends Block {
+  private authService: AuthService;
+
   constructor() {
     super({
       EmailInput: new Input({
@@ -68,6 +71,8 @@ export class RegisterPage extends Block {
         submit: (e: Event) => this.handleSubmit(e),
       },
     });
+
+    this.authService = new AuthService();
   }
 
   private handleSubmit(event: Event): void {

@@ -4,8 +4,11 @@ import './chatList.pcss';
 import Button from '../../components/Button/Button';
 import { validateForm } from '../../helpers/validation';
 import { arrowRightIcon } from '../../../public/static/icons/arrowRight';
+import { ChatsService } from '../../services/ChatsService';
 
 export class ChatListPage extends Block {
+  private chatService: ChatsService;
+
   constructor() {
     super({
       SearchInput: new Input({
@@ -29,6 +32,8 @@ export class ChatListPage extends Block {
         submit: (e: Event) => this.handleSubmit(e),
       },
     });
+
+    this.chatService = new ChatsService();
   }
 
   private handleSubmit(event: Event): void {

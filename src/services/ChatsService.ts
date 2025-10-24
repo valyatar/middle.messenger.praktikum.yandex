@@ -8,9 +8,6 @@ export interface Chat {
   last_message?: string;
 }
 
-export interface CreateChatData {
-  title: string;
-}
 
 export interface ChatUserData {
   users: number[];
@@ -34,9 +31,9 @@ export class ChatsService {
     return JSON.parse(response.responseText);
   }
 
-  async createChat(data: CreateChatData): Promise<void> {
+  async createChat(title: string): Promise<void> {
     const response = await this.http.post('/chats', {
-      data: JSON.stringify(data),
+      data: JSON.stringify(title),
       headers: {
         'Content-Type': 'application/json',
       },

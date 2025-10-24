@@ -1,4 +1,5 @@
 import { AuthService } from '../services/AuthService';
+import { User, RegisterData } from '../types/app';
 
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -15,14 +16,7 @@ export class AuthController {
     }
   }
 
-  async register(userData: {
-    first_name: string;
-    second_name: string;
-    login: string;
-    email: string;
-    password: string;
-    phone: string;
-  }): Promise<boolean> {
+  async register(userData: RegisterData): Promise<boolean> {
     try {
       await this.authService.register(userData);
       return true;
@@ -54,16 +48,16 @@ export class AuthController {
     }
   }
 
-  getCurrentUser() {
+  getCurrentUser(): User | null {
     const userData = localStorage.getItem('user');
     return userData ? JSON.parse(userData) : null;
   }
 
-  private storeUser(user: any) {
+  private storeUser(user: User): void {
     localStorage.setItem('user', JSON.stringify(user));
   }
 
-  private clearUser() {
+  private clearUser(): void {
     localStorage.removeItem('user');
   }
 }

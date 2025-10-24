@@ -1,5 +1,6 @@
 import { HTTPTransport } from './http/HTTPTransport';
 import { ChangePasswordData, User, UserProfileData } from '../types/app';
+import { isSuccessStatus } from './http/HttpStatus';
 
 export class UserService {
   private http: HTTPTransport;
@@ -16,7 +17,7 @@ export class UserService {
       },
     });
 
-    return this.handleResponse(response);
+    return this.parseResponse<User>(response);
   }
 
   async changeAvatar(avatar: File): Promise<User> {
@@ -27,7 +28,7 @@ export class UserService {
       data: formData,
     });
 
-    return this.handleResponse(response);
+    return this.parseResponse<User>(response);
   }
 
   async changePassword(data: ChangePasswordData): Promise<void> {
@@ -38,7 +39,7 @@ export class UserService {
       },
     });
 
-    this.handleResponse(response);
+    this.checkResponse(response);
   }
 
   async searchUser(login: string): Promise<User[]> {
@@ -49,30 +50,38 @@ export class UserService {
       },
     });
 
-    return this.handleResponse(response);
+    return this.parseResponse<User[]>(response);
   }
 
   async getUserById(id: number): Promise<User> {
     const response = await this.http.get(`/user/${id}`);
-    return this.handleResponse(response);
+    return this.parseResponse<User>(response);
   }
 
-  private handleResponse(response: XMLHttpRequest): any {
-    if (response.status >= 200 && response.status < 300) {
-      if (response.responseText) {
-        return JSON.parse(response.responseText);
-      }
-      return;
+  private parseResponse<T>(response: XMLHttpRequest): T {
+    this.checkResponse(response);
+
+    if (!response.responseText) {
+      throw new Error('Empty response body');
     }
 
-    let errorMessage = `Request failed with status ${response.status}`;
     try {
-      const errorData = JSON.parse(response.responseText);
-      errorMessage = errorData.reason || errorMessage;
-    } catch {
-
+      return JSON.parse(response.responseText) as T;
+    } catch (error) {
+      throw new Error('Failed to parse response JSON');
     }
+  }
 
-    throw new Error(errorMessage);
+  private checkResponse(response: XMLHttpRequest): void {
+    if (!isSuccessStatus(response.status)) {
+      let errorMessage = `Request failed with status ${response.status}`;
+      try {
+        const errorData = JSON.parse(response.responseText);
+        errorMessage = errorData.reason || errorMessage;
+      } catch {
+      }
+
+      throw new Error(errorMessage);
+    }
   }
 }

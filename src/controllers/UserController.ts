@@ -1,5 +1,5 @@
 import { UserService } from '../services/UserService';
-import { ChangePasswordData, UserProfileData } from '../types/app';
+import { ChangePasswordData, User, UserProfileData } from '../types/app';
 
 export class UserController {
   constructor(private userService: UserService) {}
@@ -37,7 +37,7 @@ export class UserController {
     }
   }
 
-  async searchUsers(login: string): Promise<any[]> {
+  async searchUsers(login: string): Promise<User[]> {
     try {
       return await this.userService.searchUser(login);
     } catch (error) {
@@ -46,7 +46,7 @@ export class UserController {
     }
   }
 
-  private updateStoredUser(user: any) {
+  private updateStoredUser(user: User): void {
     const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
     const updatedUser = { ...currentUser, ...user };
     localStorage.setItem('user', JSON.stringify(updatedUser));

@@ -5,60 +5,69 @@ const METHODS = {
   DELETE: 'DELETE',
 } as const;
 
-type HTTPMethod = (url: string, options?: RequestOptions) => Promise<XMLHttpRequest>;
+type Method = typeof METHODS[keyof typeof METHODS];
+
+type HTTPMethod = (url: string, options?: Omit<RequestOptions, 'method'>) => Promise<XMLHttpRequest>;
 
 interface RequestOptions {
+  method: Method;
   headers?: Record<string, string>;
-  data?: any;
+  data?: unknown;
   timeout?: number;
 }
 
-function queryStringify(data: Record<string, any>): string {
-  if (typeof data !== 'object') {
-    throw new Error('Data must be object');
+function queryStringify(data: Record<string, unknown>): string {
+  const keys = Object.keys(data);
+  if (keys.length === 0) {
+    return '';
   }
 
-  const keys = Object.keys(data);
-  return keys.reduce((result, key, index) => {
-    return `${result}${key}=${data[key]}${index < keys.length - 1 ? '&' : ''}`;
-  }, '?');
+  const params = keys
+    .map(key => {
+      const value = data[key];
+      if (value === null || value === undefined) {
+        return null;
+      }
+      return `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`;
+    })
+    .filter((param): param is string => param !== null);
+
+  return params.length > 0 ? `?${params.join('&')}` : '';
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 class HTTPTransport {
-  get: HTTPMethod = (url, options: RequestOptions = {}) => {
-    return this.request(url, { ...options, method: METHODS.GET }, options.timeout);
-  };
+  private createMethod(method: Method): HTTPMethod {
+    return (url: string, options: Omit<RequestOptions, 'method'> = {}) => {
+      return this.request(url, { ...options, method });
+    };
+  }
 
-  post: HTTPMethod = (url, options: RequestOptions = {}) => {
-    return this.request(url, { ...options, method: METHODS.POST }, options.timeout);
-  };
+  public readonly get = this.createMethod(METHODS.GET);
 
-  put: HTTPMethod = (url, options: RequestOptions = {}) => {
-    return this.request(url, { ...options, method: METHODS.PUT }, options.timeout);
-  };
+  public readonly post = this.createMethod(METHODS.POST);
 
-  delete: HTTPMethod = (url, options: RequestOptions = {}) => {
-    return this.request(url, { ...options, method: METHODS.DELETE }, options.timeout);
-  };
+  public readonly put = this.createMethod(METHODS.PUT);
 
-  request = (url: string, options: RequestOptions & { method?: string } = {}, timeout = 5000): Promise<XMLHttpRequest> => {
-    const { headers = {}, method, data } = options;
+  public readonly delete = this.createMethod(METHODS.DELETE);
 
-    return new Promise(function (resolve, reject) {
-      if (!method) {
-        reject('No method');
-        return;
-      }
+  private request(url: string, options: RequestOptions): Promise<XMLHttpRequest> {
+    const { headers = {}, method, data, timeout = 5000 } = options;
 
+    return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       const isGet = method === METHODS.GET;
 
-      xhr.open(
-        method,
-        isGet && !!data
-          ? `${url}${queryStringify(data)}`
-          : url,
-      );
+      let requestUrl = url;
+      if (isGet && data && isRecord(data)) {
+        const query = queryStringify(data);
+        requestUrl = url + query;
+      }
+
+      xhr.open(method, requestUrl);
 
       Object.keys(headers).forEach(key => {
         xhr.setRequestHeader(key, headers[key]);
@@ -77,10 +86,17 @@ class HTTPTransport {
       if (isGet || !data) {
         xhr.send();
       } else {
-        xhr.send(data);
+        if (data instanceof FormData) {
+          xhr.send(data);
+        } else {
+          if (!headers['Content-Type']) {
+            xhr.setRequestHeader('Content-Type', 'application/json');
+          }
+          xhr.send(typeof data === 'string' ? data : JSON.stringify(data));
+        }
       }
     });
-  };
+  }
 }
 
 export { HTTPTransport };

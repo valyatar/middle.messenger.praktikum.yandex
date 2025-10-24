@@ -1,4 +1,4 @@
-import {BlockProps} from "../framework/Block";
+import { BlockProps } from '../framework/Block';
 
 export interface LoginData {
   login: string;
@@ -83,7 +83,7 @@ export interface AppWithControllers {
   changePage: (page: string) => void;
 }
 
-export interface AuthorizationPageProps extends BlockProps{
+export interface AuthorizationPageProps extends BlockProps {
   app: AppWithControllers;
   onSuccess?: () => void;
 }

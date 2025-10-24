@@ -1,10 +1,10 @@
 .info-row {
-    display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 12px 0;
     border-bottom: 1px solid #e6e6e6;
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    padding: 12px 0;
 }
 
 .info-row__label {
@@ -13,32 +13,34 @@
 }
 
 .info-row__control {
-    flex: 1;
     display: flex;
+    flex: 1;
     justify-content: flex-end;
-}
 
-.info-row__control {
     .input {
-        max-width: 360px;
-        width: 100%;
-        text-align: right;
         background: transparent;
         border: none;
-        color: #9aa0a6;
-        padding: 8px 0;
         box-shadow: none;
-        margin: 0;
+        color: #9aa0a6;
         font-size: 16px;
+        margin: 0;
+        max-width: 360px;
+        padding: 8px 0;
+        text-align: right;
+        width: 100%;
+    }
+
+    .input__error {
+        color: red;
     }
 
     .input:focus {
-        outline: none;
         color: #333;
+        outline: none;
     }
 
     .info-row__value {
-        font-size: 16px;
         color: #9aa0a6;
+        font-size: 16px;
     }
 }

@@ -1,0 +1,143 @@
+import { AuthorizationPage } from './pages/authorizationPage/AuthorizationPage';
+import Footer from './components/Footer/Footer';
+import { RegisterPage } from './pages/registerPage/RegisterPage';
+import { ChatListPage } from './pages/chatListPage/ChatListPage';
+import { ProfilePage } from './pages/profilePage/ProfilePage';
+import { ChangePasswordPage } from './pages/profilePage/changePasswordPage/ChangePasswordPage';
+import ErrorPage404 from './pages/errorPages/error404/ErrorPage404';
+import ErrorPage500 from './pages/errorPages/error500/ErrorPage500';
+
+import { AuthService } from './services/AuthService';
+import { UserService } from './services/UserService';
+import { ChatsService } from './services/ChatsService';
+import { AuthController } from './controllers/AuthController';
+import { UserController } from './controllers/UserController';
+import { ChatController } from './controllers/ChatController';
+
+import { AppWithControllers } from './types/app';
+
+interface AppState {
+  currentPage: string;
+}
+
+export default class App implements AppWithControllers {
+  private appElement: HTMLElement | null;
+
+  private readonly state: AppState;
+
+  private footer: Footer;
+
+  private readonly pageContainer: HTMLElement;
+
+  public authController: AuthController;
+
+  public userController: UserController;
+
+  public chatController: ChatController;
+
+  constructor() {
+    this.state = {
+      currentPage: 'authorization',
+    };
+    this.appElement = document.getElementById('app');
+    this.footer = new Footer();
+
+    this.pageContainer = document.createElement('main');
+    this.pageContainer.id = 'page';
+
+    this.appElement?.appendChild(this.pageContainer);
+    this.appElement?.appendChild(this.footer.getContent());
+
+    this.initializeMVC();
+  }
+
+  private initializeMVC() {
+    const authService = new AuthService();
+    const userService = new UserService();
+    const chatService = new ChatsService();
+
+    this.authController = new AuthController(authService);
+    this.userController = new UserController(userService);
+    this.chatController = new ChatController(chatService);
+  }
+
+  render() {
+    const { currentPage } = this.state;
+    let pageHTML;
+    switch (currentPage) {
+      case 'authorization':
+        pageHTML = new AuthorizationPage({
+          app: this,
+        });
+        break;
+      case 'registration':
+        pageHTML = new RegisterPage({
+          app: this,
+        });
+        break;
+      case 'chatList':
+        pageHTML = new ChatListPage({
+          app: this,
+        });
+        break;
+      case 'profileSettings':
+        pageHTML = new ProfilePage({
+          app: this,
+        });
+        break;
+      case 'changePassword':
+        pageHTML = new ChangePasswordPage({
+          app: this,
+        });
+        break;
+      case 'error404':
+        pageHTML = new ErrorPage404({
+          app: this,
+        });
+        break;
+      case 'error500':
+        pageHTML = new ErrorPage500({
+          app: this,
+        });
+        break;
+    }
+
+    this.pageContainer.innerHTML = '';
+    if (pageHTML) {
+      this.pageContainer.appendChild(pageHTML.getContent());
+    }
+
+    this.addEventListeners();
+  }
+
+  changePage(page: string) {
+    this.state.currentPage = page;
+    this.render();
+  }
+
+  addEventListeners() {
+    const { currentPage } = this.state;
+    if (currentPage === 'authorization') {
+      const createAccountBtn = document.getElementById('createAccount');
+      createAccountBtn?.addEventListener('click', () => this.changePage('registration'));
+    } else if (currentPage === 'registration') {
+      const signInBtn = document.getElementById('signIn');
+      signInBtn?.addEventListener('click', () => this.changePage('authorization'));
+    } else if (currentPage === 'profileSettings') {
+      const changePwdBtn = document.getElementById('changePassword');
+      changePwdBtn?.addEventListener('click', () => this.changePage('changePassword'));
+    }
+
+    const footerLinks = document.querySelectorAll('.footer-link');
+    footerLinks.forEach(link => {
+      link.addEventListener('click', (e: MouseEvent) => {
+        e.preventDefault();
+        const target = e.target as HTMLElement;
+        const page = target.closest('a')?.dataset.page;
+        if (page) {
+          this.changePage(page);
+        }
+      });
+    });
+  }
+}

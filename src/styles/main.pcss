@@ -7,19 +7,19 @@
 }
 
 body {
+  color: var(--text-color);
   font-family: Arial, sans-serif;
   line-height: 1.6;
-  color: var(--text-color);
-  max-width: 800px;
   margin: 0 auto;
+  max-width: 800px;
   padding: 20px;
 }
 
 .app {
   background-color: var(--background-color);
-  padding: 20px;
   border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgb(0 0 0 / 10%);
+  padding: 20px;
 }
 
 h1, h2, h3 {
@@ -27,16 +27,16 @@ h1, h2, h3 {
 }
 
 .input, .select, .button {
+  box-sizing: border-box;
   margin: 10px 0;
   padding: 10px;
   width: 100%;
-  box-sizing: border-box;
 }
 
 .button {
   background-color: var(--primary-color);
-  color: white;
   border: none;
+  color: white;
   cursor: pointer;
   transition: background-color 0.3s ease;
 
@@ -57,10 +57,10 @@ ul {
 
 li {
   background-color: white;
+  border-radius: 3px;
+  box-shadow: 0 0 5px rgb(0 0 0 / 10%);
   margin: 10px 0;
   padding: 10px;
-  border-radius: 3px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
 .error {

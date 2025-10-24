@@ -1,24 +1,48 @@
 .chat-layout {
+    border: 1px solid #e5e5e5;
     display: flex;
     height: 80vh;
-    border: 1px solid #e5e5e5;
 
     .left {
-        flex: 0 0 280px;
-        display: flex;
-        flex-direction: column;
         border-right: 1px solid #e5e5e5;
+        display: flex;
+        flex: 0 0 280px;
+        flex-direction: column;
 
-        .left__search { flex: 0 0 56px; padding: 8px; border-bottom: 1px solid #e5e5e5; }
-        .left__list   { flex: 1 1 auto; overflow: auto; }
+        .left__search {
+            border-bottom: 1px solid #e5e5e5;
+            flex: 0 0 56px;
+            padding: 8px;
+        }
+
+        .left__list   {
+            flex: 1 1 auto;
+            overflow: auto;
+        }
     }
 
     .right {
-        flex: 1 1 auto;
         display: flex;
+        flex: 1 1 auto;
         flex-direction: column;
 
-        .right__messages { flex: 1 1 auto; overflow: auto; padding: 8px; border-bottom: 1px solid #e5e5e5; }
-        .right__composer { flex: 0 0 56px; padding: 8px; }
+        .right__messages {
+            align-content: end;
+            border-bottom: 1px solid #e5e5e5;
+            flex: 1 1 auto;
+            overflow: auto;
+            padding: 8px;
+        }
+
+        .right__composer {
+            flex: 0 0 56px;
+            padding: 8px;
+
+            .message_container {
+                display: flex;
+                flex-direction: row;
+                gap: 6px;
+            }
+        }
     }
 }

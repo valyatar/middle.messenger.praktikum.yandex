@@ -8,7 +8,7 @@ export interface ButtonProps extends BlockProps {
   icon?: string;
 }
 
-export default class Button extends Block {
+export default class Button extends Block<ButtonProps> {
   constructor(props: ButtonProps) {
     super({
       ...props,
@@ -21,22 +21,22 @@ export default class Button extends Block {
 
     if (icon) {
       return (
-        `<button 
-            id="{{id}}" 
-            class="button button--icon-round"  
+        `<button
+            id="{{id}}"
+            class="button button--icon-round"
             type="{{#if type}}{{type}}{{else}}button{{/if}}"
             {{#if disabled}}disabled{{/if}}
             aria-label="Кнопка с иконкой"
           >
-            <span class="button__icon">${icon as string}</span>
+            <span class="button__icon">${icon}</span>
           </button>`
       );
     }
 
     return (
-      `<button 
-          id="{{id}}" 
-          class="button"  
+      `<button
+          id="{{id}}"
+          class="button"
           type="{{#if type}}{{type}}{{else}}button{{/if}}"
           {{#if disabled}}disabled{{/if}}
         >

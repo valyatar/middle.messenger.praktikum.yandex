@@ -8,10 +8,9 @@ import { ChatListPageProps } from '../../types/app';
 import { ChatItem } from '../../components/ChatItem/ChatItem';
 import { Message } from '../../components/MessageItem/Message';
 
-export class ChatListPage extends Block {
-
+export class ChatListPage extends Block<ChatListPageProps> {
   constructor(props: ChatListPageProps) {
-    super({
+    const componentProps = {
       SearchInput: new Input({
         id: 'search',
         name: 'search',
@@ -43,9 +42,12 @@ export class ChatListPage extends Block {
       events: {
         submit: (e: Event) => this.handleSubmit(e),
       },
-    });
+    };
 
-    this.props = props;
+    super({
+      ...componentProps,
+      ...props,
+    });
   }
 
   private handleSubmit(event: Event): void {

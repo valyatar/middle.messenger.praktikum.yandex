@@ -8,7 +8,7 @@ export interface LinkProps extends BlockProps { // наследуем от Block
   onClick?: (e: Event) => void;
 }
 
-export default class Link extends Block {
+export default class Link extends Block<LinkProps> {
   constructor(props: LinkProps) {
     super({
       ...props,

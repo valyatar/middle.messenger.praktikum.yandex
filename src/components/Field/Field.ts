@@ -12,7 +12,7 @@ export interface FieldProps extends BlockProps {
   href?: string;
 }
 
-export class Field extends Block {
+export class Field extends Block<FieldProps> {
   constructor(props: FieldProps) {
     super({
       ...props,

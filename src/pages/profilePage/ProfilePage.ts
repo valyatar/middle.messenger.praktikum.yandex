@@ -1,18 +1,18 @@
 import Block from '../../framework/Block';
 import { Image } from '../../components/Image/Image';
-import { Field } from '../../components/Field/FIeld';
+import { Field } from '../../components/Field/Field';
 import Link from '../../components/Link/Link';
 import { ProfilePageProps } from '../../types/app';
 
 import './profile.pcss';
 
-export class ProfilePage extends Block {
+export class ProfilePage extends Block<ProfilePageProps> {
   constructor(props: ProfilePageProps) {
-    super({
+    const componentProps = {
       Avatar: new Image({
-        size:'120px',
-        src:'/static/icons/avatar.svg',
-        name:'avatar',
+        size: '120px',
+        src: '/static/icons/avatar.svg',
+        name: 'avatar',
       }),
       EmailField: new Field({
         id: 'email',
@@ -86,12 +86,15 @@ export class ProfilePage extends Block {
         },
         id: '',
       }),
-    });
+    };
 
-    this.props = props;
+    super({
+      ...componentProps,
+      ...props,
+    });
   }
 
-  render(): string {
+  protected render(): string {
     return `<main class="profile-settings">
     <div id="avatar" name="avatar" class="img-centered">
         {{{ Avatar }}}

@@ -12,7 +12,7 @@ export interface InputProps extends BlockProps {
   onClick?: (e: Event) => void;
 }
 
-export default class Input extends Block {
+export default class Input extends Block<InputProps> {
   constructor(props: InputProps) {
     super({
       ...props,

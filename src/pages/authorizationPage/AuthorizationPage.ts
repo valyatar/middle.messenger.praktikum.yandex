@@ -5,9 +5,9 @@ import Button from '../../components/Button/Button';
 import { validateForm } from '../../helpers/validation';
 import { AuthorizationPageProps } from '../../types/app';
 
-export class AuthorizationPage extends Block {
+export class AuthorizationPage extends Block<AuthorizationPageProps> {
   constructor(props: AuthorizationPageProps) {
-    super({
+    const componentProps = {
       LoginInput: new Input({
         id: 'login',
         name: 'login',
@@ -38,9 +38,12 @@ export class AuthorizationPage extends Block {
       events: {
         submit: (e: Event) => this.handleSubmit(e),
       },
-    });
+    };
 
-    this.props = props;
+    super({
+      ...componentProps,
+      ...props,
+    });
   }
 
   private handleSubmit(event: Event): void {

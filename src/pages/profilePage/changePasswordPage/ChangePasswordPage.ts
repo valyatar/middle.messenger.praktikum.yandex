@@ -1,5 +1,5 @@
 import Block from '../../../framework/Block';
-import { Field } from '../../../components/Field/FIeld';
+import { Field } from '../../../components/Field/Field';
 import { Image } from '../../../components/Image/Image';
 import Button from '../../../components/Button/Button';
 import { validateForm } from '../../../helpers/validation';
@@ -7,10 +7,10 @@ import { ChangePasswordPageProps } from '../../../types/app';
 
 import '../profile.pcss';
 
-export class ChangePasswordPage extends Block {
+export class ChangePasswordPage extends Block<ChangePasswordPageProps> {
 
   constructor(props: ChangePasswordPageProps) {
-    super({
+    const componentProps = {
       Avatar: new Image({
         size: '120px',
         src: '/static/icons/avatar.svg',
@@ -42,9 +42,12 @@ export class ChangePasswordPage extends Block {
       events: {
         submit: (e: Event) => this.handleSubmit(e),
       },
-    });
+    };
 
-    this.props = props;
+    super({
+      ...componentProps,
+      ...props,
+    });
   }
 
   private handleSubmit(event: Event): void {

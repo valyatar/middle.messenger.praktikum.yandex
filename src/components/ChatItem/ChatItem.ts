@@ -11,7 +11,7 @@ interface ChatItemProps extends BlockProps {
   onClick?: (chatId: number) => void;
 }
 
-export class ChatItem extends Block {
+export class ChatItem extends Block<ChatItemProps> {
   constructor(props: ChatItemProps) {
     super({
       ...props,

@@ -3,7 +3,7 @@ import Link from '../Link/Link';
 
 import './footer.pcss';
 
-export default class Footer extends Block {
+export default class Footer extends Block<BlockProps> {
   constructor() {
     const linksData = [
       {

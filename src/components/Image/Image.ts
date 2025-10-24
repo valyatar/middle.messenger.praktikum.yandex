@@ -9,7 +9,7 @@ export interface ImageProps extends BlockProps {
   alt?: string;
 }
 
-export class Image extends Block {
+export class Image extends Block<ImageProps> {
   constructor(props: ImageProps) {
     super({
       ...props,

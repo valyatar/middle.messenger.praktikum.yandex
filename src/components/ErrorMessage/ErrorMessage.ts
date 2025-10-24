@@ -4,7 +4,7 @@ export interface ErrorMessageProps extends BlockProps {
   message: string;
 }
 
-export default class ErrorMessage extends Block {
+export default class ErrorMessage extends Block<ErrorMessageProps> {
   constructor(props: ErrorMessageProps) {
     super({
       ...props,

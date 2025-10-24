@@ -5,10 +5,9 @@ import Button from '../../components/Button/Button';
 import { validateForm } from '../../helpers/validation';
 import { RegisterPageProps } from '../../types/app';
 
-
-export class RegisterPage extends Block {
+export class RegisterPage extends Block<RegisterPageProps> {
   constructor(props: RegisterPageProps) {
-    super({
+    const componentProps = {
       EmailInput: new Input({
         id: 'email',
         name: 'email',
@@ -69,9 +68,12 @@ export class RegisterPage extends Block {
       events: {
         submit: (e: Event) => this.handleSubmit(e),
       },
-    });
+    };
 
-    this.props = props;
+    super({
+      ...componentProps,
+      ...props,
+    });
   }
 
   private handleSubmit(event: Event): void {

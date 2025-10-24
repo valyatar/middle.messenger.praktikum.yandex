@@ -65,7 +65,7 @@ export class ChatListPage extends Block<ChatListPageProps> {
   }
 
   render(): string {
-    return `<main class="chat-list">
+    return `<div class="chat-list">
     <div class="chat-layout">
         <aside class="left">
             <div class="left__search">
@@ -76,7 +76,7 @@ export class ChatListPage extends Block<ChatListPageProps> {
             </div>
         </aside>
 
-        <main class="right">
+        <div class="right">
             <div class="right__messages">
                 {{{ Message }}}
             </div>
@@ -88,8 +88,8 @@ export class ChatListPage extends Block<ChatListPageProps> {
                   </div>
                 </form>
             </div>
-        </main>
+        </div>
     </div>
-</main>`;
+</div>`;
   }
 }

@@ -91,7 +91,7 @@ export class RegisterPage extends Block<RegisterPageProps> {
   }
 
   render(): string {
-    return `<main class="register">
+    return `<div class="register">
               <form>
                 <h2>Регистрация</h2>
                 {{{ EmailInput }}}
@@ -104,6 +104,6 @@ export class RegisterPage extends Block<RegisterPageProps> {
                 {{{ RegistrationBtn }}}
                 {{{ SignInLink }}}
               </form>
-            </main>`;
+            </div>`;
   }
 }

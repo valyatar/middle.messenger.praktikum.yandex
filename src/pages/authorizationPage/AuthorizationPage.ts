@@ -60,7 +60,7 @@ export class AuthorizationPage extends Block<AuthorizationPageProps> {
   }
 
   render(): string {
-    return `<main class="authorization">
+    return `<div class="authorization">
               <form>
                 <h2>Вход</h2>
                 {{{ LoginInput }}}
@@ -68,6 +68,6 @@ export class AuthorizationPage extends Block<AuthorizationPageProps> {
                 {{{ AuthorizationBtn }}}
                 {{{ CreateAccountLink }}}
               </form>
-            </main>`;
+            </div>`;
   }
 }

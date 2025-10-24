@@ -13,8 +13,8 @@ export default class ErrorPage500 extends Block<ErrorPageProps> {
   }
 
   render() {
-    return `<main className="error-page">
+    return `<div className="error-page">
         {{{ ErrorMessage }}}
-    </main>`;
+    </div>`;
   }
 }

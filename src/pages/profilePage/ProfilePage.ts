@@ -95,7 +95,7 @@ export class ProfilePage extends Block<ProfilePageProps> {
   }
 
   protected render(): string {
-    return `<main class="profile-settings">
+    return `<div class="profile-settings">
     <div id="avatar" name="avatar" class="img-centered">
         {{{ Avatar }}}
     </div>
@@ -114,6 +114,6 @@ export class ProfilePage extends Block<ProfilePageProps> {
         {{{ ChangePasswordLink }}}
         {{{ ExitLink }}}
     </div>
-</main>`;
+</div>`;
   }
 }

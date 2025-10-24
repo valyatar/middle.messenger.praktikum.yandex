@@ -65,7 +65,7 @@ export class ChangePasswordPage extends Block<ChangePasswordPageProps> {
   }
 
   render(): string {
-    return `<main class="change-pwd">
+    return `<div class="change-pwd">
               <form>
                 <div id="avatar" name="avatar" class="img-centered">
                   {{{ Avatar }}}
@@ -79,6 +79,6 @@ export class ChangePasswordPage extends Block<ChangePasswordPageProps> {
                   {{{ SaveBtn }}}
                 </div>
               </form>
-            </main>`;
+            </div>`;
   }
 }

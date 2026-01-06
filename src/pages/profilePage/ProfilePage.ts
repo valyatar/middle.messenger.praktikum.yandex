@@ -96,7 +96,7 @@ export class ProfilePage extends Block<ProfilePageProps> {
         text: 'Выйти',
         onClick: (event: Event) => {
           event.preventDefault();
-          void this.props.app.authController.logout();
+          this.props.app.authController.logout().catch(console.error);
         },
         id: '',
       }),

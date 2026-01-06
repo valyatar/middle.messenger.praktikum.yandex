@@ -1,4 +1,5 @@
 import { BlockProps } from '../framework/Block';
+import Router from '../router/Router';
 
 export interface LoginData {
   login: string;
@@ -80,7 +81,7 @@ export interface AppWithControllers {
   authController: AuthController;
   userController: UserController;
   chatController: ChatController;
-  changePage: (page: string) => void;
+  router: Router;
 }
 
 export interface AuthorizationPageProps extends BlockProps {

@@ -5,6 +5,11 @@ import Button from '../../components/Button/Button';
 import { validateForm } from '../../helpers/validation';
 import { AuthorizationPageProps } from '../../types/app';
 
+function getStringField(data: Record<string, unknown>, key: string): string | null {
+  const value = data[key];
+  return typeof value === 'string' ? value : null;
+}
+
 export class AuthorizationPage extends Block<AuthorizationPageProps> {
   constructor(props: AuthorizationPageProps) {
     const componentProps = {
@@ -25,15 +30,21 @@ export class AuthorizationPage extends Block<AuthorizationPageProps> {
         text: 'Авторизоваться',
         type: 'submit',
       }),
+      // UnAuthorizationBtn: new Link({
+      //   href: '/sign-up',
+      //   text: 'Выйти ТЕСТ',
+      //   onClick: (event: Event) => {
+      //     event.preventDefault();
+      //     this.props.app.authController.logout();
+      //   },
+      // }),
       CreateAccountLink: new Link({
-        href: '#',
-        datapage: 'registration',
+        href: '/sign-up',
         text: 'Нет аккаунта?',
         onClick: (event: Event) => {
           event.preventDefault();
-          event.stopPropagation();
+          props.app.router.go('/sign-up');
         },
-        id: 'createAccount',
       }),
       events: {
         submit: (e: Event) => this.handleSubmit(e),
@@ -46,8 +57,9 @@ export class AuthorizationPage extends Block<AuthorizationPageProps> {
     });
   }
 
-  private handleSubmit(event: Event): void {
+  private async handleSubmit(event: Event): Promise<void> {
     event.preventDefault();
+
     const form = event.target as HTMLFormElement;
     const validationResult = validateForm(form);
 
@@ -56,7 +68,20 @@ export class AuthorizationPage extends Block<AuthorizationPageProps> {
       return;
     }
 
-    console.log('Данные со страницы авторизации:', validationResult.data);
+    const data = validationResult.data as Record<string, unknown>;
+    const login = getStringField(data, 'login');
+    const password = getStringField(data, 'password');
+
+    if (!login || !password) {
+      console.log('Не удалось получить login/password из формы');
+      return;
+    }
+
+    const ok = await this.props.app.authController.login(login, password);
+
+    if (!ok) {
+      alert('Неверный логин или пароль');
+    }
   }
 
   render(): string {

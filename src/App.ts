@@ -1,3 +1,5 @@
+import Router from './router/Router';
+
 import { AuthorizationPage } from './pages/authorizationPage/AuthorizationPage';
 import Footer from './components/Footer/Footer';
 import { RegisterPage } from './pages/registerPage/RegisterPage';
@@ -16,14 +18,8 @@ import { ChatController } from './controllers/ChatController';
 
 import { AppWithControllers } from './types/app';
 
-interface AppState {
-  currentPage: string;
-}
-
 export default class App implements AppWithControllers {
   private appElement: HTMLElement | null;
-
-  private readonly state: AppState;
 
   private footer: Footer;
 
@@ -35,10 +31,9 @@ export default class App implements AppWithControllers {
 
   public chatController: ChatController;
 
+  public router: Router;
+
   constructor() {
-    this.state = {
-      currentPage: 'authorization',
-    };
     this.appElement = document.getElementById('app');
     this.footer = new Footer();
 
@@ -48,6 +43,8 @@ export default class App implements AppWithControllers {
     this.appElement?.appendChild(this.pageContainer);
     this.appElement?.appendChild(this.footer.getContent());
 
+    this.router = new Router('#page');
+
     this.initializeMVC();
   }
 
@@ -56,88 +53,29 @@ export default class App implements AppWithControllers {
     const userService = new UserService();
     const chatService = new ChatsService();
 
-    this.authController = new AuthController(authService);
+    this.authController = new AuthController(authService, this.router);
     this.userController = new UserController(userService);
     this.chatController = new ChatController(chatService);
   }
 
-  render() {
-    const { currentPage } = this.state;
-    let pageHTML;
-    switch (currentPage) {
-      case 'authorization':
-        pageHTML = new AuthorizationPage({
-          app: this,
-        });
-        break;
-      case 'registration':
-        pageHTML = new RegisterPage({
-          app: this,
-        });
-        break;
-      case 'chatList':
-        pageHTML = new ChatListPage({
-          app: this,
-        });
-        break;
-      case 'profileSettings':
-        pageHTML = new ProfilePage({
-          app: this,
-        });
-        break;
-      case 'changePassword':
-        pageHTML = new ChangePasswordPage({
-          app: this,
-        });
-        break;
-      case 'error404':
-        pageHTML = new ErrorPage404({
-          app: this,
-        });
-        break;
-      case 'error500':
-        pageHTML = new ErrorPage500({
-          app: this,
-        });
-        break;
+  public async render() {
+    this.router
+      .use('/', AuthorizationPage, { app: this })
+      .use('/sign-up', RegisterPage, { app: this })
+      .use('/settings', ProfilePage, { app: this })
+      .use('/messenger', ChatListPage, { app: this })
+      .use('/settings/password', ChangePasswordPage, { app: this })
+      .use('/404', ErrorPage404, { app: this })
+      .use('/500', ErrorPage500, { app: this });
+
+    const isAuth = await this.authController.checkAuth();
+
+    const publicRoutes = new Set<string>(['/', '/sign-up']);
+    const pathname = window.location.pathname;
+
+    if (!isAuth && !publicRoutes.has(pathname)) {
+      window.history.replaceState({}, '', '/');
     }
-
-    this.pageContainer.innerHTML = '';
-    if (pageHTML) {
-      this.pageContainer.appendChild(pageHTML.getContent());
-    }
-
-    this.addEventListeners();
-  }
-
-  changePage(page: string) {
-    this.state.currentPage = page;
-    this.render();
-  }
-
-  addEventListeners() {
-    const { currentPage } = this.state;
-    if (currentPage === 'authorization') {
-      const createAccountBtn = document.getElementById('createAccount');
-      createAccountBtn?.addEventListener('click', () => this.changePage('registration'));
-    } else if (currentPage === 'registration') {
-      const signInBtn = document.getElementById('signIn');
-      signInBtn?.addEventListener('click', () => this.changePage('authorization'));
-    } else if (currentPage === 'profileSettings') {
-      const changePwdBtn = document.getElementById('changePassword');
-      changePwdBtn?.addEventListener('click', () => this.changePage('changePassword'));
-    }
-
-    const footerLinks = document.querySelectorAll('.footer-link');
-    footerLinks.forEach(link => {
-      link.addEventListener('click', (e: MouseEvent) => {
-        e.preventDefault();
-        const target = e.target as HTMLElement;
-        const page = target.closest('a')?.dataset.page;
-        if (page) {
-          this.changePage(page);
-        }
-      });
-    });
+    this.router.start();
   }
 }

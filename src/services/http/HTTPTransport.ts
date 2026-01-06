@@ -1,3 +1,5 @@
+import { isSuccessStatus } from './HttpStatus';
+
 const METHODS = {
   GET: 'GET',
   POST: 'POST',
@@ -7,13 +9,12 @@ const METHODS = {
 
 type Method = typeof METHODS[keyof typeof METHODS];
 
-type HTTPMethod = (url: string, options?: Omit<RequestOptions, 'method'>) => Promise<XMLHttpRequest>;
-
 interface RequestOptions {
   method: Method;
   headers?: Record<string, string>;
   data?: unknown;
   timeout?: number;
+  withCredentials?: boolean;
 }
 
 function queryStringify(data: Record<string, unknown>): string {
@@ -23,7 +24,7 @@ function queryStringify(data: Record<string, unknown>): string {
   }
 
   const params = keys
-    .map(key => {
+    .map((key) => {
       const value = data[key];
       if (value === null || value === undefined) {
         return null;
@@ -39,64 +40,123 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-class HTTPTransport {
-  private createMethod(method: Method): HTTPMethod {
-    return (url: string, options: Omit<RequestOptions, 'method'> = {}) => {
-      return this.request(url, { ...options, method });
-    };
+function isFormData(value: unknown): value is FormData {
+  return typeof FormData !== 'undefined' && value instanceof FormData;
+}
+
+type ApiErrorShape = { reason?: unknown };
+
+export class HTTPError extends Error {
+  public readonly status: number;
+
+  public readonly reason?: string;
+
+  constructor(status: number, message: string, reason?: string) {
+    super(message);
+    this.status = status;
+    this.reason = reason;
+  }
+}
+
+export class HTTPTransport {
+  private readonly baseUrl: string;
+
+  constructor(baseUrl = 'https://ya-praktikum.tech/api/v2') {
+    this.baseUrl = baseUrl;
   }
 
-  public readonly get = this.createMethod(METHODS.GET);
+  public get<TResponse>(path: string, options: Omit<RequestOptions, 'method'> = {}): Promise<TResponse> {
+    return this.request<TResponse>(path, { ...options, method: METHODS.GET });
+  }
 
-  public readonly post = this.createMethod(METHODS.POST);
+  public post<TResponse>(path: string, options: Omit<RequestOptions, 'method'> = {}): Promise<TResponse> {
+    return this.request<TResponse>(path, { ...options, method: METHODS.POST });
+  }
 
-  public readonly put = this.createMethod(METHODS.PUT);
+  public put<TResponse>(path: string, options: Omit<RequestOptions, 'method'> = {}): Promise<TResponse> {
+    return this.request<TResponse>(path, { ...options, method: METHODS.PUT });
+  }
 
-  public readonly delete = this.createMethod(METHODS.DELETE);
+  public delete<TResponse>(path: string, options: Omit<RequestOptions, 'method'> = {}): Promise<TResponse> {
+    return this.request<TResponse>(path, { ...options, method: METHODS.DELETE });
+  }
 
-  private request(url: string, options: RequestOptions): Promise<XMLHttpRequest> {
-    const { headers = {}, method, data, timeout = 5000 } = options;
+  private request<TResponse>(path: string, options: RequestOptions): Promise<TResponse> {
+    const {
+      headers = {},
+      method,
+      data,
+      timeout = 5000,
+      withCredentials = true, // важно для cookie-сессий Практикума
+    } = options;
 
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       const isGet = method === METHODS.GET;
 
-      let requestUrl = url;
+      let url = `${this.baseUrl}${path}`;
+
       if (isGet && data && isRecord(data)) {
-        const query = queryStringify(data);
-        requestUrl = url + query;
+        url += queryStringify(data);
       }
 
-      xhr.open(method, requestUrl);
+      xhr.open(method, url);
+      xhr.withCredentials = withCredentials;
+      xhr.timeout = timeout;
 
-      Object.keys(headers).forEach(key => {
+      Object.keys(headers).forEach((key) => {
         xhr.setRequestHeader(key, headers[key]);
       });
 
-      xhr.onload = function () {
-        resolve(xhr);
+      xhr.onload = () => {
+        const status = xhr.status;
+
+        const contentType = xhr.getResponseHeader('content-type') ?? '';
+        const isJson = contentType.includes('application/json');
+
+        let parsed: unknown = undefined;
+        if (isJson && xhr.responseText) {
+          try {
+            parsed = JSON.parse(xhr.responseText);
+          } catch {
+            parsed = undefined;
+          }
+        }
+
+        if (isSuccessStatus(status)) {
+          resolve(parsed as TResponse);
+          return;
+        }
+
+        let reason: string | undefined;
+        if (isRecord(parsed) && 'reason' in parsed) {
+          const r = (parsed as ApiErrorShape).reason;
+          if (typeof r === 'string') reason = r;
+          else if (r !== undefined) reason = String(r);
+        }
+
+        reject(new HTTPError(status, `HTTP error ${status}`, reason));
       };
 
-      xhr.onabort = reject;
-      xhr.onerror = reject;
+      xhr.onabort = () => reject(new HTTPError(0, 'Request aborted'));
+      xhr.onerror = () => reject(new HTTPError(0, 'Network error'));
+      xhr.ontimeout = () => reject(new HTTPError(0, 'Request timeout'));
 
-      xhr.timeout = timeout;
-      xhr.ontimeout = reject;
-
-      if (isGet || !data) {
+      if (isGet || data === undefined || data === null) {
         xhr.send();
-      } else {
-        if (data instanceof FormData) {
-          xhr.send(data);
-        } else {
-          if (!headers['Content-Type']) {
-            xhr.setRequestHeader('Content-Type', 'application/json');
-          }
-          xhr.send(typeof data === 'string' ? data : JSON.stringify(data));
-        }
+        return;
       }
+
+      if (isFormData(data)) {
+        xhr.send(data);
+        return;
+      }
+
+      if (!headers['Content-Type']) {
+        xhr.setRequestHeader('Content-Type', 'application/json');
+      }
+
+      xhr.send(typeof data === 'string' ? data : JSON.stringify(data));
     });
   }
 }
-
-export { HTTPTransport };

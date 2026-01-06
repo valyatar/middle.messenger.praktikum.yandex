@@ -1,7 +1,6 @@
 import Router from './router/Router';
 
 import { AuthorizationPage } from './pages/authorizationPage/AuthorizationPage';
-import Footer from './components/Footer/Footer';
 import { RegisterPage } from './pages/registerPage/RegisterPage';
 import { ChatListPage } from './pages/chatListPage/ChatListPage';
 import { ProfilePage } from './pages/profilePage/ProfilePage';
@@ -22,8 +21,6 @@ import { ChangeDataPage } from './pages/profilePage/changeUserDataPages/ChangeDa
 export default class App implements AppWithControllers {
   private appElement: HTMLElement | null;
 
-  private footer: Footer;
-
   private readonly pageContainer: HTMLElement;
 
   public authController: AuthController;
@@ -36,13 +33,11 @@ export default class App implements AppWithControllers {
 
   constructor() {
     this.appElement = document.getElementById('app');
-    this.footer = new Footer();
 
     this.pageContainer = document.createElement('main');
     this.pageContainer.id = 'page';
 
     this.appElement?.appendChild(this.pageContainer);
-    this.appElement?.appendChild(this.footer.getContent());
 
     this.router = new Router('#page');
 

@@ -60,7 +60,7 @@ export class ChangePasswordPage extends Block<ChangePasswordPageProps> {
     });
   }
 
-  private async handleSubmit(event: Event): Promise<void> {
+  private handleSubmit(event: Event): void {
     event.preventDefault();
 
     const form = event.target as HTMLFormElement;
@@ -92,23 +92,20 @@ export class ChangePasswordPage extends Block<ChangePasswordPageProps> {
       return;
     }
 
-    try {
-      await this.props.app.userController.changePassword({
-        oldPassword,
-        newPassword,
-      });
-
+    this.props.app.userController.changePassword({
+      oldPassword,
+      newPassword,
+    }).then(() => {
       alert('Пароль успешно изменён');
-
       this.props.app.router.go('/settings');
-    } catch (error: unknown) {
+    }).catch((error: unknown) => {
       const message =
         error instanceof Error
           ? error.message
           : 'Не удалось изменить пароль';
 
       alert(message);
-    }
+    });
   }
 
   render(): string {

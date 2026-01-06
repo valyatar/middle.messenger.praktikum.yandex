@@ -151,15 +151,18 @@ export class ProfilePage extends Block<ProfilePageProps> {
     }
 
     try {
-      await this.props.app.userController.changeAvatar(file);
+      const ok = await this.props.app.userController.changeAvatar(file);
+      if (ok) {
+        const freshUser = await this.props.app.authController.fetchUser();
+        const newSrc = getAvatarSrc(freshUser.avatar);
 
-      const freshUser = await this.props.app.authController.fetchUser();
-      const newSrc = getAvatarSrc(freshUser.avatar);
+        const avatar = this.children.Avatar as unknown as Image;
+        avatar.setProps({ src: newSrc });
 
-      const avatar = this.children.Avatar as unknown as Image;
-      avatar.setProps({ src: newSrc });
-
-      alert('Аватар обновлён');
+        alert('Аватар обновлён');
+      } else {
+        alert('Не удалось обновить аватар');
+      }
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Не удалось обновить аватар';
       alert(msg);

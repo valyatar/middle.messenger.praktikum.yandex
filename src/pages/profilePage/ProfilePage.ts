@@ -5,87 +5,118 @@ import Link from '../../components/Link/Link';
 import { ProfilePageProps } from '../../types/app';
 
 import './profile.pcss';
+import Button from '../../components/Button/Button';
+import { arrowLeftIcon } from '../../../public/static/icons/arrowLeft';
+
+const RESOURCES_BASE = 'https://ya-praktikum.tech/api/v2/resources';
+
+export function getAvatarSrc(avatar: string | null | undefined): string {
+  return avatar ? `${RESOURCES_BASE}${avatar}` : '/static/icons/avatar.svg';
+}
 
 export class ProfilePage extends Block<ProfilePageProps> {
   constructor(props: ProfilePageProps) {
+    const user = props.app.authController.getCurrentUser();
+    const avatarSrc = getAvatarSrc(user?.avatar);
     const componentProps = {
       Avatar: new Image({
         size: '120px',
-        src: '/static/icons/avatar.svg',
+        src: avatarSrc ?? '/static/icons/avatar.svg',
         name: 'avatar',
       }),
+
       EmailField: new Field({
         id: 'email',
         name: 'email',
         label: 'Почта',
-        value: 'mail@yandex.ru',
+        value: user?.email ?? '',
         readonly: true,
       }),
       LoginField: new Field({
         id: 'login',
         name: 'login',
         label: 'Логин',
-        value: 'valyatar',
+        value: user?.login ?? '',
         readonly: true,
       }),
       FirstNameField: new Field({
         id: 'first_name',
         name: 'first_name',
         label: 'Имя',
-        value: 'Valya',
+        value: user?.first_name ?? '',
         readonly: true,
       }),
       SecondNameField: new Field({
         id: 'second_name',
         name: 'second_name',
         label: 'Фамилия',
-        value: 'Tarasova',
+        value: user?.second_name ?? '',
         readonly: true,
       }),
       DisplayNameField: new Field({
         id: 'display_name',
         name: 'display_name',
         label: 'Имя в чате',
-        value: 'valya',
+        value: user?.display_name ?? '',
         readonly: true,
       }),
       PhoneField: new Field({
         id: 'phone',
         name: 'phone',
         label: 'Телефон',
-        value: '88008888888',
+        value: user?.phone ?? '',
         readonly: true,
       }),
+
       ChangeDataLink: new Link({
         href: '#',
         datapage: '',
         text: 'Изменить данные',
         onClick: (event: Event) => {
           event.preventDefault();
-          event.stopPropagation();
+          props.app.router.go('/settings/userData');
         },
         id: '',
       }),
+
       ChangePasswordLink: new Link({
         href: '#',
         datapage: 'changePassword',
         text: 'Изменить пароль',
         onClick: (event: Event) => {
           event.preventDefault();
-          event.stopPropagation();
+          props.app.router.go('/settings/password');
         },
         id: 'changePassword',
       }),
+
       ExitLink: new Link({
         href: '#',
         datapage: '',
         text: 'Выйти',
         onClick: (event: Event) => {
           event.preventDefault();
-          event.stopPropagation();
+          void this.props.app.authController.logout();
         },
         id: '',
       }),
+
+      BackBtn: new Button({
+        id: 'backBtn',
+        icon: arrowLeftIcon,
+        type: 'button',
+        events: {
+          click: (event: Event) => {
+            event.preventDefault();
+            props.app.router.go('/messenger');
+          },
+        },
+      }),
+
+      events: {
+        click: (e: Event) => this.onClick(e),
+        change: (e: Event) => this.onChange(e),
+      },
     };
 
     super({
@@ -94,26 +125,77 @@ export class ProfilePage extends Block<ProfilePageProps> {
     });
   }
 
+  private onClick(event: Event): void {
+    const target = event.target as HTMLElement | null;
+    if (!target) return;
+
+    const avatarWrap = target.closest('#avatar');
+    if (avatarWrap) {
+      const input = document.getElementById('avatarInput') as HTMLInputElement | null;
+      input?.click();
+    }
+  }
+
+  private async onChange(event: Event): Promise<void> {
+    const target = event.target as HTMLInputElement | null;
+    if (!target) return;
+    if (target.id !== 'avatarInput') return;
+
+    const file = target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Выберите изображение');
+      target.value = '';
+      return;
+    }
+
+    try {
+      await this.props.app.userController.changeAvatar(file);
+
+      const freshUser = await this.props.app.authController.fetchUser();
+      const newSrc = getAvatarSrc(freshUser.avatar);
+
+      const avatar = this.children.Avatar as unknown as Image;
+      avatar.setProps({ src: newSrc });
+
+      alert('Аватар обновлён');
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : 'Не удалось обновить аватар';
+      alert(msg);
+    } finally {
+      target.value = '';
+    }
+  }
+
   protected render(): string {
     return `<div class="profile-settings">
-    <div id="avatar" name="avatar" class="img-centered">
-        {{{ Avatar }}}
-    </div>
-    <h2>Валентина</h2>
-    <div>
-        {{{ EmailField }}}
-        {{{ LoginField }}}
-        {{{ FirstNameField }}}
-        {{{ SecondNameField }}}
-        {{{ DisplayNameField }}}
-        {{{ PhoneField }}}
-    </div>
+      <div class="profile-settings__left">
+        {{{ BackBtn }}}
+      </div>
 
-    <div class="profile-settings__actions">
-        {{{ ChangeDataLink }}}
-        {{{ ChangePasswordLink }}}
-        {{{ ExitLink }}}
-    </div>
-</div>`;
+      <div class="profile-settings__right">
+       <div id="avatar" name="avatar" class="img-centered" style="cursor: pointer;">
+          {{{ Avatar }}}
+        </div>
+        <input id="avatarInput" type="file" accept="image/*" style="display:none;" />
+        <h2>Валентина</h2>
+
+        <div>
+          {{{ EmailField }}}
+          {{{ LoginField }}}
+          {{{ FirstNameField }}}
+          {{{ SecondNameField }}}
+          {{{ DisplayNameField }}}
+          {{{ PhoneField }}}
+        </div>
+
+        <div class="profile-settings__actions">
+          {{{ ChangeDataLink }}}
+          {{{ ChangePasswordLink }}}
+          {{{ ExitLink }}}
+        </div>
+      </div>
+    </div>`;
   }
 }

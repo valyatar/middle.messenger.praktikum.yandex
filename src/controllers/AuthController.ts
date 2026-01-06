@@ -73,6 +73,12 @@ export class AuthController {
     }
   }
 
+  async fetchUser(): Promise<User> {
+    const user = await this.authService.getUser();
+    this.storeUser(user);
+    return user;
+  }
+
   getCurrentUser(): User | null {
     return safeParseUser(localStorage.getItem('user'));
   }

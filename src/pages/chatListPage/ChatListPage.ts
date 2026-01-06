@@ -7,6 +7,7 @@ import { arrowRightIcon } from '../../../public/static/icons/arrowRight';
 import { ChatListPageProps } from '../../types/app';
 import { ChatItem } from '../../components/ChatItem/ChatItem';
 import { Message } from '../../components/MessageItem/Message';
+import Link from '../../components/Link/Link';
 
 export class ChatListPage extends Block<ChatListPageProps> {
   constructor(props: ChatListPageProps) {
@@ -39,6 +40,14 @@ export class ChatListPage extends Block<ChatListPageProps> {
         icon: arrowRightIcon,
         type: 'submit',
       }),
+      ProfileLink: new Link({
+        href: '/settings',
+        text: 'Профиль >',
+        onClick: (event: Event) => {
+          event.preventDefault();
+          props.app.router.go('/settings');
+        },
+      }),
       events: {
         submit: (e: Event) => this.handleSubmit(e),
       },
@@ -68,6 +77,9 @@ export class ChatListPage extends Block<ChatListPageProps> {
     return `<div class="chat-list">
     <div class="chat-layout">
         <aside class="left">
+            <div class="left__profile-link">
+                {{{ ProfileLink }}}
+            </div>
             <div class="left__search">
                 {{{ SearchInput }}}
             </div>

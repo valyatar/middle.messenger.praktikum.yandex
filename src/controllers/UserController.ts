@@ -4,25 +4,25 @@ import { ChangePasswordData, User, UserProfileData } from '../types/app';
 export class UserController {
   constructor(private userService: UserService) {}
 
-  async updateProfile(profileData: UserProfileData): Promise<boolean> {
+  async updateProfile(profileData: UserProfileData): Promise<User> {
     try {
       const updatedUser = await this.userService.changeProfile(profileData);
       this.updateStoredUser(updatedUser);
-      return true;
+      return updatedUser;
     } catch (error) {
       console.error('Profile update failed:', error);
-      return false;
+      return {} as User;
     }
   }
 
-  async updateAvatar(avatarFile: File): Promise<boolean> {
+  async changeAvatar(avatarFile: File): Promise<User> {
     try {
       const updatedUser = await this.userService.changeAvatar(avatarFile);
       this.updateStoredUser(updatedUser);
-      return true;
+      return updatedUser;
     } catch (error) {
       console.error('Avatar update failed:', error);
-      return false;
+      return {} as User;
     }
   }
 

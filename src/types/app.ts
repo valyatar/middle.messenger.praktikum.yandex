@@ -59,11 +59,12 @@ export interface AuthController {
   logout: () => Promise<void>;
   checkAuth: () => Promise<boolean>;
   getCurrentUser: () => User | null;
+  fetchUser: () => Promise<User>;
 }
 
 export interface UserController {
-  updateProfile: (profileData: UserProfileData) => Promise<boolean>;
-  updateAvatar: (avatarFile: File) => Promise<boolean>;
+  updateProfile: (profileData: UserProfileData) => Promise<User>;
+  changeAvatar: (avatarFile: File) => Promise<User>;
   changePassword: (data: ChangePasswordData) => Promise<boolean>;
   searchUsers: (login: string) => Promise<User[]>;
 }

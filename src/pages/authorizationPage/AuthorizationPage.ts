@@ -30,14 +30,6 @@ export class AuthorizationPage extends Block<AuthorizationPageProps> {
         text: 'Авторизоваться',
         type: 'submit',
       }),
-      // UnAuthorizationBtn: new Link({
-      //   href: '/sign-up',
-      //   text: 'Выйти ТЕСТ',
-      //   onClick: (event: Event) => {
-      //     event.preventDefault();
-      //     this.props.app.authController.logout();
-      //   },
-      // }),
       CreateAccountLink: new Link({
         href: '/sign-up',
         text: 'Нет аккаунта?',

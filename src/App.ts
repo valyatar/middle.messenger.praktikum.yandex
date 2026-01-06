@@ -5,7 +5,7 @@ import Footer from './components/Footer/Footer';
 import { RegisterPage } from './pages/registerPage/RegisterPage';
 import { ChatListPage } from './pages/chatListPage/ChatListPage';
 import { ProfilePage } from './pages/profilePage/ProfilePage';
-import { ChangePasswordPage } from './pages/profilePage/changePasswordPage/ChangePasswordPage';
+import { ChangePasswordPage } from './pages/profilePage/changeUserDataPages/ChangePasswordPage';
 import ErrorPage404 from './pages/errorPages/error404/ErrorPage404';
 import ErrorPage500 from './pages/errorPages/error500/ErrorPage500';
 
@@ -17,6 +17,7 @@ import { UserController } from './controllers/UserController';
 import { ChatController } from './controllers/ChatController';
 
 import { AppWithControllers } from './types/app';
+import { ChangeDataPage } from './pages/profilePage/changeUserDataPages/ChangeDataPage';
 
 export default class App implements AppWithControllers {
   private appElement: HTMLElement | null;
@@ -65,6 +66,7 @@ export default class App implements AppWithControllers {
       .use('/settings', ProfilePage, { app: this })
       .use('/messenger', ChatListPage, { app: this })
       .use('/settings/password', ChangePasswordPage, { app: this })
+      .use('/settings/userData', ChangeDataPage, { app: this })
       .use('/404', ErrorPage404, { app: this })
       .use('/500', ErrorPage500, { app: this });
 

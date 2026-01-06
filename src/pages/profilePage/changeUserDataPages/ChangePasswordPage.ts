@@ -3,11 +3,11 @@ import { Field } from '../../../components/Field/Field';
 import Button from '../../../components/Button/Button';
 import { validateForm } from '../../../helpers/validation';
 import { ChangePasswordPageProps } from '../../../types/app';
-
-import '../profile.pcss';
 import { arrowLeftIcon } from '../../../../public/static/icons/arrowLeft';
 
-type FormDataMap = Record<string, unknown>;
+import '../profile.pcss';
+
+export type FormDataMap = Record<string, unknown>;
 
 export class ChangePasswordPage extends Block<ChangePasswordPageProps> {
   constructor(props: ChangePasswordPageProps) {
@@ -82,7 +82,7 @@ export class ChangePasswordPage extends Block<ChangePasswordPageProps> {
         ? data.repeatNewPassword
         : '';
 
-    if (!oldPassword || !newPassword) {
+    if (!oldPassword || !newPassword || !repeatNewPassword) {
       alert('Все поля обязательны');
       return;
     }
@@ -92,42 +92,46 @@ export class ChangePasswordPage extends Block<ChangePasswordPageProps> {
       return;
     }
 
-    this.props.app.userController.changePassword({
-      oldPassword,
-      newPassword,
-    }).then(() => {
-      alert('Пароль успешно изменён');
-      this.props.app.router.go('/settings');
-    }).catch((error: unknown) => {
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'Не удалось изменить пароль';
+    void this.props.app.userController
+      .changePassword({ oldPassword, newPassword })
+      .then(success => {
+        if (success) {
+          alert('Пароль успешно изменён');
+          this.props.app.router.go('/settings');
+        } else {
+          alert('Не удалось изменить пароль');
+        }
+      })
+      .catch((error: unknown) => {
+        const message =
+          error instanceof Error
+            ? error.message
+            : 'Не удалось изменить пароль';
 
-      alert(message);
-    });
+        alert(message);
+      });
   }
 
   render(): string {
     return `<div class="profile-settings">
-                <div class="profile-settings__left">
-                    {{{ BackBtn }}}
-                </div>
+      <div class="profile-settings__left">
+        {{{ BackBtn }}}
+      </div>
 
-                <div class="profile-settings__right">
-                    <div class="change-pwd">
-                        <form>
-                            <div>
-                                {{{ OldPasswordField }}}
-                                {{{ NewPasswordField }}}
-                                {{{ RepeatNewPasswordField }}}
-                            </div>
-                            <div class="change-pwd__actions">
-                                {{{ SaveBtn }}}
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>`;
+      <div class="profile-settings__right">
+        <div class="change-pwd">
+          <form>
+            <div>
+              {{{ OldPasswordField }}}
+              {{{ NewPasswordField }}}
+              {{{ RepeatNewPasswordField }}}
+            </div>
+            <div class="change-pwd__actions">
+              {{{ SaveBtn }}}
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>`;
   }
 }

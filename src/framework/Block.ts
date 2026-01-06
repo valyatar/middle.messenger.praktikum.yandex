@@ -203,6 +203,9 @@ export default abstract class Block<Props extends BlockProps> {
       return;
     }
     Object.assign(this.lists, nextList);
+
+    // важно: списки не в proxy, поэтому сами не триггерят render
+    this.eventBus().emit(Block.EVENTS.FLOW_RENDER);
   };
 
   get element(): HTMLElement | null {

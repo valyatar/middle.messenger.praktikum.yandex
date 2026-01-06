@@ -5,6 +5,7 @@ import { RegisterPage } from './pages/registerPage/RegisterPage';
 import { ChatListPage } from './pages/chatListPage/ChatListPage';
 import { ProfilePage } from './pages/profilePage/ProfilePage';
 import { ChangePasswordPage } from './pages/profilePage/changeUserDataPages/ChangePasswordPage';
+import { ChangeDataPage } from './pages/profilePage/changeUserDataPages/ChangeDataPage';
 import ErrorPage404 from './pages/errorPages/error404/ErrorPage404';
 import ErrorPage500 from './pages/errorPages/error500/ErrorPage500';
 
@@ -16,7 +17,7 @@ import { UserController } from './controllers/UserController';
 import { ChatController } from './controllers/ChatController';
 
 import { AppWithControllers } from './types/app';
-import { ChangeDataPage } from './pages/profilePage/changeUserDataPages/ChangeDataPage';
+import { store } from './store/Store';
 
 export default class App implements AppWithControllers {
   private appElement: HTMLElement | null;
@@ -36,15 +37,15 @@ export default class App implements AppWithControllers {
 
     this.pageContainer = document.createElement('main');
     this.pageContainer.id = 'page';
-
     this.appElement?.appendChild(this.pageContainer);
 
     this.router = new Router('#page');
 
     this.initializeMVC();
+    this.registerRoutes();
   }
 
-  private initializeMVC() {
+  private initializeMVC(): void {
     const authService = new AuthService();
     const userService = new UserService();
     const chatService = new ChatsService();
@@ -54,7 +55,7 @@ export default class App implements AppWithControllers {
     this.chatController = new ChatController(chatService);
   }
 
-  public async render() {
+  private registerRoutes(): void {
     this.router
       .use('/', AuthorizationPage, { app: this })
       .use('/sign-up', RegisterPage, { app: this })
@@ -64,8 +65,26 @@ export default class App implements AppWithControllers {
       .use('/settings/userData', ChangeDataPage, { app: this })
       .use('/404', ErrorPage404, { app: this })
       .use('/500', ErrorPage500, { app: this });
+  }
 
+  public async init(): Promise<void> {
     const isAuth = await this.authController.checkAuth();
+
+    if (isAuth) {
+      const user = await this.authController.fetchUser();
+      store.set('user', user);
+
+      try {
+        const chats = await this.chatController.loadChats();
+        store.set('chats', chats);
+      } catch (error: unknown) {
+        store.set('chats', []);
+        console.error('Failed to load chats:', error);
+      }
+    } else {
+      store.set('user', null);
+      store.set('chats', []);
+    }
 
     const publicRoutes = new Set<string>(['/', '/sign-up']);
     const pathname = window.location.pathname;
@@ -73,6 +92,10 @@ export default class App implements AppWithControllers {
     if (!isAuth && !publicRoutes.has(pathname)) {
       window.history.replaceState({}, '', '/');
     }
+  }
+
+
+  public render(): void {
     this.router.start();
   }
 }

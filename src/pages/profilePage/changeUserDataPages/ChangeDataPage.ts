@@ -1,17 +1,20 @@
 import Block from '../../../framework/Block';
 import { Field } from '../../../components/Field/Field';
 import Button from '../../../components/Button/Button';
-import { ChangePasswordPageProps, ProfilePageProps } from '../../../types/app';
-
-import '../profile.pcss';
+import { ProfilePageProps } from '../../../types/app';
+import { store } from '../../../store/Store';
 import { arrowLeftIcon } from '../../../../public/static/icons/arrowLeft';
 import { validateForm } from '../../../helpers/validation';
 
-type FormDataMap = Record<string, unknown>;
+import '../profile.pcss';
+import { FormDataMap } from './ChangePasswordPage';
 
 export class ChangeDataPage extends Block<ProfilePageProps> {
-  constructor(props: ChangePasswordPageProps) {
-    const user = props.app.authController.getCurrentUser();
+  private unsubscribeStore: (() => void) | null;
+
+  constructor(props: ProfilePageProps) {
+    const user = store.getState().user;
+
     const componentProps = {
       EmailField: new Field({
         id: 'email',
@@ -49,11 +52,13 @@ export class ChangeDataPage extends Block<ProfilePageProps> {
         label: 'Телефон',
         value: user?.phone ?? '',
       }),
+
       SaveBtn: new Button({
         id: 'saveBtn',
         text: 'Сохранить',
         type: 'submit',
       }),
+
       BackBtn: new Button({
         id: 'backBtn',
         icon: arrowLeftIcon,
@@ -65,6 +70,7 @@ export class ChangeDataPage extends Block<ProfilePageProps> {
           },
         },
       }),
+
       events: {
         submit: (e: Event) => this.handleSubmit(e),
       },
@@ -74,6 +80,23 @@ export class ChangeDataPage extends Block<ProfilePageProps> {
       ...componentProps,
       ...props,
     });
+
+    this.unsubscribeStore = store.subscribe(() => {
+      const nextUser = store.getState().user;
+
+      (this.children.EmailField as unknown as Field).setProps({ value: nextUser?.email ?? '' });
+      (this.children.LoginField as unknown as Field).setProps({ value: nextUser?.login ?? '' });
+      (this.children.FirstNameField as unknown as Field).setProps({ value: nextUser?.first_name ?? '' });
+      (this.children.SecondNameField as unknown as Field).setProps({ value: nextUser?.second_name ?? '' });
+      (this.children.DisplayNameField as unknown as Field).setProps({ value: nextUser?.display_name ?? '' });
+      (this.children.PhoneField as unknown as Field).setProps({ value: nextUser?.phone ?? '' });
+    });
+  }
+
+  public destroy(): void {
+    this.unsubscribeStore?.();
+    this.unsubscribeStore = null;
+    super.destroy();
   }
 
   private async handleSubmit(event: Event): Promise<void> {
@@ -101,10 +124,9 @@ export class ChangeDataPage extends Block<ProfilePageProps> {
     try {
       const updatedUser = await this.props.app.userController.updateProfile(payload);
 
-      localStorage.setItem('user', JSON.stringify(updatedUser));
+      store.set('user', updatedUser);
 
       alert('Данные профиля сохранены');
-
       this.props.app.router.go('/settings');
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Не удалось обновить данные профиля';
@@ -112,34 +134,30 @@ export class ChangeDataPage extends Block<ProfilePageProps> {
     }
   }
 
-
   render(): string {
     return `<div class="profile-settings">
-                <div class="profile-settings__left">
-                    {{{ BackBtn }}}
-                </div>
+      <div class="profile-settings__left">
+        {{{ BackBtn }}}
+      </div>
 
-                <div class="profile-settings__right">
-                    <div class="change-pwd">
-                        <form>
-                            <div id="avatar" name="avatar" class="img-centered">
-                                {{{ Avatar }}}
-                            </div>
+      <div class="profile-settings__right">
+        <div class="change-pwd">
+          <form>
+            <div>
+              {{{ EmailField }}}
+              {{{ LoginField }}}
+              {{{ FirstNameField }}}
+              {{{ SecondNameField }}}
+              {{{ DisplayNameField }}}
+              {{{ PhoneField }}}
+            </div>
 
-                            <div>
-                                {{{ EmailField }}}
-                                {{{ LoginField }}}
-                                {{{ FirstNameField }}}
-                                {{{ SecondNameField }}}
-                                {{{ DisplayNameField }}}
-                                {{{ PhoneField }}}
-                            </div>
-                            <div class="change-pwd__actions">
-                                {{{ SaveBtn }}}
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>`;
+            <div class="change-pwd__actions">
+              {{{ SaveBtn }}}
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>`;
   }
 }

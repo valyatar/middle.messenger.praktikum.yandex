@@ -12,7 +12,7 @@ import Link from '../../components/Link/Link';
 import { store } from '../../store/Store';
 import { plusIcon } from '../../../public/static/icons/plusIcon';
 
-function mapChatsToItems(chats: Chat[]): ChatItem[] {
+function mapChatsToItems(chats: Chat[], selectedChatId: number | null): ChatItem[] {
   return chats.map((chat) => {
     const lastMessageText =
       chat.last_message && typeof chat.last_message === 'object' && 'content' in chat.last_message
@@ -23,6 +23,10 @@ function mapChatsToItems(chats: Chat[]): ChatItem[] {
       id: String(chat.id),
       title: chat.title,
       lastMessage: lastMessageText || '',
+      isActive: selectedChatId === chat.id,
+      onSelect: (id: number) => {
+        store.set('selectedChatId', id);
+      },
     });
   });
 }
@@ -31,8 +35,8 @@ export class ChatListPage extends Block<ChatListPageProps> {
   private unsubscribeStore: (() => void) | null;
 
   constructor(props: ChatListPageProps) {
-    const chats = store.getState().chats;
-    const chatItems = mapChatsToItems(chats);
+    const state = store.getState();
+    const chatItems = mapChatsToItems(state.chats, state.selectedChatId);
 
     const componentProps = {
       SearchInput: new Input({
@@ -99,8 +103,8 @@ export class ChatListPage extends Block<ChatListPageProps> {
     });
 
     this.unsubscribeStore = store.subscribe(() => {
-      const nextChats = store.getState().chats;
-      const nextItems = mapChatsToItems(nextChats);
+      const nextState = store.getState();
+      const nextItems = mapChatsToItems(nextState.chats, nextState.selectedChatId);
       this.setLists({ ChatItems: nextItems });
     });
   }

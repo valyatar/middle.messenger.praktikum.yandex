@@ -26,6 +26,7 @@ export class Store {
   private state: AppState = {
     user: null,
     chats: [],
+    selectedChatId: null,
   };
 
   private listeners: Set<Listener> = new Set();

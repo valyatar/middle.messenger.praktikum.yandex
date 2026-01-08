@@ -100,7 +100,17 @@ export class ProfilePage extends Block<ProfilePageProps> {
         text: 'Выйти',
         onClick: (event: Event) => {
           event.preventDefault();
-          void this.props.app.authController.logout().catch(console.error);
+
+          void this.props.app.authController
+            .logout()
+            .then(() => {
+              store.set('user', null);
+              store.set('chats', []);
+              store.set('selectedChatId', null);
+              store.set('messagesByChatId', {});
+              this.props.app.router.go('/');
+            })
+            .catch(console.error);
         },
         id: '',
       }),
@@ -116,6 +126,7 @@ export class ProfilePage extends Block<ProfilePageProps> {
           },
         },
       }),
+      UserName: user?.display_name || user?.first_name || '',
 
       events: {
         click: (e: Event) => this.onClick(e),
@@ -199,7 +210,7 @@ export class ProfilePage extends Block<ProfilePageProps> {
 
         <input id="avatarInput" type="file" accept="image/*" style="display:none;" />
 
-        <h2>Валентина</h2>
+        <h2>{{{ UserName }}}</h2>
 
         <div>
           {{{ EmailField }}}

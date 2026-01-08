@@ -1,6 +1,7 @@
 import Router from '../router/Router';
 import { AuthService } from '../services/AuthService';
 import { User, RegisterData } from '../types/app';
+import { store } from '../store/Store';
 
 type StoredUser = User;
 
@@ -54,10 +55,11 @@ export class AuthController {
   async logout(): Promise<void> {
     try {
       await this.authService.logout();
-    } catch (error: unknown) {
-      console.error('Logout failed:', error);
     } finally {
-      this.clearUser();
+      store.set('user', null);
+      store.set('chats', []);
+      store.set('selectedChatId', null);
+      store.set('messagesByChatId', {});
       this.router.go('/');
     }
   }

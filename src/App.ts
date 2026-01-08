@@ -18,6 +18,7 @@ import { ChatController } from './controllers/ChatController';
 
 import { AppWithControllers } from './types/app';
 import { store } from './store/Store';
+import { MessagesService } from './services/MessagesService';
 
 export default class App implements AppWithControllers {
   private appElement: HTMLElement | null;
@@ -32,6 +33,8 @@ export default class App implements AppWithControllers {
 
   public router: Router;
 
+  public messagesService: MessagesService;
+
   constructor() {
     this.appElement = document.getElementById('app');
 
@@ -42,6 +45,9 @@ export default class App implements AppWithControllers {
     this.router = new Router('#page');
 
     this.initializeMVC();
+
+    this.messagesService = new MessagesService();
+
     this.registerRoutes();
   }
 
@@ -77,13 +83,13 @@ export default class App implements AppWithControllers {
       try {
         const chats = await this.chatController.loadChats();
         store.set('chats', chats);
-      } catch (error: unknown) {
+      } catch (e) {
         store.set('chats', []);
-        console.error('Failed to load chats:', error);
       }
     } else {
       store.set('user', null);
       store.set('chats', []);
+      store.set('selectedChatId', null);
     }
 
     const publicRoutes = new Set<string>(['/', '/sign-up']);

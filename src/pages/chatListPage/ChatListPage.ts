@@ -11,6 +11,7 @@ import Link from '../../components/Link/Link';
 
 import { store } from '../../store/Store';
 import { plusIcon } from '../../../public/static/icons/plusIcon';
+import { ChatMessage } from '../../store/types';
 
 function mapChatsToItems(chats: Chat[], selectedChatId: number | null): ChatItem[] {
   return chats.map((chat) => {
@@ -31,12 +32,36 @@ function mapChatsToItems(chats: Chat[], selectedChatId: number | null): ChatItem
   });
 }
 
+function formatTime(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+}
+
+function mapMessagesToItems(messages: ChatMessage[], myUserId: number | null): Message[] {
+  const ordered = messages.slice().reverse();
+
+  return ordered.map((m) => new Message({
+    id: String(m.id ?? `${m.time}-${m.user_id}`),
+    text: m.content,
+    time: formatTime(m.time),
+    isOwn: myUserId !== null && m.user_id === myUserId,
+  }));
+}
+
 export class ChatListPage extends Block<ChatListPageProps> {
   private unsubscribeStore: (() => void) | null;
 
+  private activeChatId: number | null;
+
   constructor(props: ChatListPageProps) {
     const state = store.getState();
+
     const chatItems = mapChatsToItems(state.chats, state.selectedChatId);
+
+    const myUserId = state.user?.id ?? null;
+    const chatId = state.selectedChatId;
+    const msgs = chatId ? (state.messagesByChatId?.[chatId] ?? []) : [];
 
     const componentProps = {
       SearchInput: new Input({
@@ -48,13 +73,7 @@ export class ChatListPage extends Block<ChatListPageProps> {
 
       ChatItems: chatItems,
 
-      // временно оставляем одно тестовое сообщение
-      Message: new Message({
-        id: '1',
-        text: 'тестовое сообщение',
-        time: '23:59',
-        isOwn: true,
-      }),
+      MessageItems: mapMessagesToItems(msgs, myUserId),
 
       MessageInput: new Input({
         id: 'message',
@@ -74,7 +93,6 @@ export class ChatListPage extends Block<ChatListPageProps> {
         icon: plusIcon,
         type: 'button',
         size: 's',
-        // ВАЖНО: обработчик клика на самой кнопке
         events: {
           click: (e: Event) => {
             e.preventDefault();
@@ -102,32 +120,79 @@ export class ChatListPage extends Block<ChatListPageProps> {
       ...props,
     });
 
+    this.activeChatId = state.selectedChatId ?? null;
+
+    if (this.activeChatId !== null) {
+      this.connectToActiveChat();
+    }
+
     this.unsubscribeStore = store.subscribe(() => {
-      const nextState = store.getState();
-      const nextItems = mapChatsToItems(nextState.chats, nextState.selectedChatId);
-      this.setLists({ ChatItems: nextItems });
+      const s = store.getState();
+
+      this.setLists({ ChatItems: mapChatsToItems(s.chats, s.selectedChatId) });
+
+      if (s.selectedChatId !== this.activeChatId) {
+        this.activeChatId = s.selectedChatId ?? null;
+        this.connectToActiveChat();
+      }
+
+      const myId = s.user?.id ?? null;
+      const chatIdNow = s.selectedChatId;
+      const messages = chatIdNow ? (s.messagesByChatId?.[chatIdNow] ?? []) : [];
+      this.setLists({ MessageItems: mapMessagesToItems(messages, myId) });
     });
   }
 
   public destroy(): void {
     this.unsubscribeStore?.();
     this.unsubscribeStore = null;
+
+    this.props.app.messagesService.disconnect();
+
     super.destroy();
+  }
+
+  private connectToActiveChat(): void {
+    const s = store.getState();
+    const chatId = s.selectedChatId;
+    const userId = s.user?.id;
+
+    if (!chatId || !userId) {
+      this.props.app.messagesService.disconnect();
+      return;
+    }
+
+    void this.props.app.chatController
+      .getChatToken(chatId)
+      ?.then(({ token }) => {
+        this.props.app.messagesService.setHandlers({
+          onOpen: () => {
+            this.props.app.messagesService.getOld(0);
+          },
+          onMessages: (messages) => {
+            store.set(`messagesByChatId.${chatId}`, messages);
+          },
+          onMessage: (message) => {
+            const current = (store.getState().messagesByChatId?.[chatId] ?? []);
+            store.set(`messagesByChatId.${chatId}`, [message, ...current]);
+          },
+        });
+
+        this.props.app.messagesService.connect({ userId, chatId, token });
+      })
+      .catch((e: unknown) => {
+        console.error(e);
+      });
   }
 
   private handleAddChat(): void {
     const titleRaw = window.prompt('Название чата');
     const title = (titleRaw ?? '').trim();
+    if (!title) return;
 
-    if (!title) {
-      return;
-    }
-
-    // eslint-safe: не делаем async обработчик, промис явно "прикреплён"
     void this.props.app.chatController
       .createChat(title)
-      .then(() => this.props.app.chatController.loadChats())
-      .then((chats: Chat[]) => {
+      .then((chats) => {
         store.set('chats', chats);
       })
       .catch((error: unknown) => {
@@ -143,12 +208,29 @@ export class ChatListPage extends Block<ChatListPageProps> {
     const validationResult = validateForm(form);
 
     if (!validationResult.isValid) {
-      console.log('Ошибка валидации');
+      alert('Проверьте сообщение');
       return;
     }
 
-    console.log('Данные со страницы сообщений:', validationResult.data);
+    const data = validationResult.data as Record<string, unknown>;
+    const text = typeof data.message === 'string' ? data.message.trim() : '';
+
+    if (!text) {
+      return;
+    }
+
+    const chatId = store.getState().selectedChatId;
+    if (!chatId) {
+      alert('Выберите чат');
+      return;
+    }
+
+    this.props.app.messagesService.sendMessage(text);
+
+    const input = document.getElementById('message') as HTMLInputElement | null;
+    if (input) input.value = '';
   }
+
 
   render(): string {
     return `<div class="chat-list">
@@ -168,7 +250,7 @@ export class ChatListPage extends Block<ChatListPageProps> {
 
         <div class="right">
           <div class="right__messages">
-            {{{ Message }}}
+            {{{ MessageItems }}}
           </div>
           <div class="right__composer">
             <form>

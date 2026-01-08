@@ -35,6 +35,6 @@ export default class Input extends Block<InputProps> {
   }
 
   render() {
-    return '<input name="{{name}}" type="{{type}}" placeholder="{{placeholder}}" value="{{value}}" class="input">';
+    return '<input id="{{id}}" name="{{name}}" type="{{type}}" placeholder="{{placeholder}}" value="{{value}}" class="input">';
   }
 }

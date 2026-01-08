@@ -27,6 +27,7 @@ export class Store {
     user: null,
     chats: [],
     selectedChatId: null,
+    messagesByChatId: {},
   };
 
   private listeners: Set<Listener> = new Set();

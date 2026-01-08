@@ -80,6 +80,7 @@ export class AuthController {
       return user;
     } catch (error: unknown) {
       console.error('Fetch failed:', error);
+      return {} as User;
     }
   }
 

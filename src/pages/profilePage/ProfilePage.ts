@@ -6,7 +6,7 @@ import { ProfilePageProps } from '../../types/app';
 import Button from '../../components/Button/Button';
 import { arrowLeftIcon } from '../../../public/static/icons/arrowLeft';
 import { store } from '../../store/Store';
-import {RESOURCES_BASE} from "../../services/http/HTTPTransport";
+import { RESOURCES_BASE } from '../../services/http/HTTPTransport';
 
 import './profile.pcss';
 

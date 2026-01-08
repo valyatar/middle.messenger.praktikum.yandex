@@ -74,9 +74,13 @@ export class AuthController {
   }
 
   async fetchUser(): Promise<User> {
-    const user = await this.authService.getUser();
-    this.storeUser(user);
-    return user;
+    try {
+      const user = await this.authService.getUser();
+      this.storeUser(user);
+      return user;
+    } catch (error: unknown) {
+      console.error('Fetch failed:', error);
+    }
   }
 
   getCurrentUser(): User | null {

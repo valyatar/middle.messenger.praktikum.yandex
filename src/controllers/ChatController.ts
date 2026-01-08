@@ -7,30 +7,58 @@ export class ChatController {
   constructor(private chatService: ChatsService) {}
 
   async loadChats(): Promise<Chat[]> {
-    this.chats = await this.chatService.getChats();
-    return this.chats;
+    try {
+      this.chats = await this.chatService.getChats();
+      return this.chats;
+    } catch (error) {
+      console.error('Failed to load chats:', error);
+      return [];
+    }
   }
 
   async createChat(title: string): Promise<Chat[]> {
-    await this.chatService.createChat(title);
-    return this.loadChats();
+    try {
+      await this.chatService.createChat(title);
+      return await this.loadChats();
+    } catch (error) {
+      console.error('Failed to create chat:', error);
+      return this.chats;
+    }
   }
 
   async deleteChat(chatId: number): Promise<Chat[]> {
-    await this.chatService.deleteChat(chatId);
-    return this.loadChats();
+    try {
+      await this.chatService.deleteChat(chatId);
+      return await this.loadChats();
+    } catch (error) {
+      console.error('Failed to delete chat:', error);
+      return this.chats;
+    }
   }
 
   async addUsersToChat(chatId: number, users: number[]): Promise<void> {
-    await this.chatService.addUserToChat({ chatId, users });
+    try {
+      await this.chatService.addUserToChat({ chatId, users });
+    } catch (error) {
+      console.error('Failed to add users to chat:', error);
+    }
   }
 
   async removeUsersFromChat(chatId: number, users: number[]): Promise<void> {
-    await this.chatService.removeUserFromChat({ chatId, users });
+    try {
+      await this.chatService.removeUserFromChat({ chatId, users });
+    } catch (error) {
+      console.error('Failed to remove users from chat:', error);
+    }
   }
 
   async getChatToken(chatId: number): Promise<{ token: string }> {
-    return this.chatService.getChatToken(chatId);
+    try {
+      return await this.chatService.getChatToken(chatId);
+    } catch (error) {
+      console.error('Failed to get chat token:', error);
+      throw error; // важно пробросить — без токена сокет не откроется
+    }
   }
 
   getCurrentChats(): Chat[] {

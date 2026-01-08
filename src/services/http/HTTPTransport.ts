@@ -90,7 +90,7 @@ export class HTTPTransport {
       method,
       data,
       timeout = 5000,
-      withCredentials = true, // важно для cookie-сессий Практикума
+      withCredentials = true,
     } = options;
 
     return new Promise((resolve, reject) => {

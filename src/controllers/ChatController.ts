@@ -57,7 +57,7 @@ export class ChatController {
       return await this.chatService.getChatToken(chatId);
     } catch (error) {
       console.error('Failed to get chat token:', error);
-      throw error; // важно пробросить — без токена сокет не откроется
+      throw error;
     }
   }
 

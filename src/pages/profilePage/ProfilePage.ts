@@ -6,10 +6,9 @@ import { ProfilePageProps } from '../../types/app';
 import Button from '../../components/Button/Button';
 import { arrowLeftIcon } from '../../../public/static/icons/arrowLeft';
 import { store } from '../../store/Store';
+import {RESOURCES_BASE} from "../../services/http/HTTPTransport";
 
 import './profile.pcss';
-
-const RESOURCES_BASE = 'https://ya-praktikum.tech/api/v2/resources';
 
 function getAvatarSrc(avatar: string | null | undefined): string {
   return avatar ? `${RESOURCES_BASE}${avatar}` : '/static/icons/avatar.svg';

@@ -58,11 +58,14 @@ export class HTTPError extends Error {
   }
 }
 
+export const BASE_URL = 'https://ya-praktikum.tech/api/v2';
+export const RESOURCES_BASE = `${BASE_URL}/resources`;
+
 export class HTTPTransport {
   private readonly baseUrl: string;
 
-  constructor(baseUrl = 'https://ya-praktikum.tech/api/v2') {
-    this.baseUrl = baseUrl;
+  constructor() {
+    this.baseUrl = BASE_URL;
   }
 
   public get<TResponse>(path: string, options: Omit<RequestOptions, 'method'> = {}): Promise<TResponse> {

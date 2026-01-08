@@ -75,7 +75,7 @@ export interface ChatController {
   createChat: (title: string) => Promise<Chat[]>;
   deleteChat: (chatId: number) => Promise<Chat[]>;
   addUsersToChat: (chatId: number, users: number[]) => Promise<void>;
-  removeUsersFromChat?: (chatId: number, users: number[]) => Promise<void>;
+  removeUsersFromChat: (chatId: number, users: number[]) => Promise<void>;
   getChatToken: (chatId: number) => Promise<{ token: string }>;
   getCurrentChats: () => Chat[];
   getChatById: (chatId: number) => Chat | undefined;

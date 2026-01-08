@@ -66,9 +66,11 @@ export class MessagesService {
       if (parsed && typeof parsed === 'object') {
         const msg = parsed as ChatMessage;
 
-        if ((msg as { type?: unknown }).type === 'pong') return;
-
-        this.handlers.onMessage?.(msg);
+        if ((msg as { type?: unknown }).type === 'message') {
+          this.handlers.onMessage?.(msg);
+        } else {
+          return;
+        }
       }
     });
 

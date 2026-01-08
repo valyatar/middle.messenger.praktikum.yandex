@@ -109,6 +109,29 @@ export class ChatListPage extends Block<ChatListPageProps> {
           props.app.router.go('/settings');
         },
       }),
+      AddUserBtn: new Button({
+        id: 'addUserBtn',
+        text: 'Добавить пользователя в чат',
+        type: 'button',
+        events: {
+          click: (e: Event) => {
+            e.preventDefault();
+            this.handleAddUser();
+          },
+        },
+      }),
+
+      RemoveUserBtn: new Button({
+        id: 'removeUserBtn',
+        text: 'Удалить пользователя из чата',
+        type: 'button',
+        events: {
+          click: (e: Event) => {
+            e.preventDefault();
+            this.handleRemoveUser();
+          },
+        },
+      }),
 
       events: {
         submit: (e: Event) => this.handleSubmit(e),
@@ -173,8 +196,24 @@ export class ChatListPage extends Block<ChatListPageProps> {
             store.set(`messagesByChatId.${chatId}`, messages);
           },
           onMessage: (message) => {
-            const current = (store.getState().messagesByChatId?.[chatId] ?? []);
+            const current = store.getState().messagesByChatId?.[chatId] ?? [];
             store.set(`messagesByChatId.${chatId}`, [message, ...current]);
+
+            const chats = store.getState().chats ?? [];
+
+            const updatedChats = chats.map((c) => {
+              if (c.id !== chatId) return c;
+
+              return {
+                ...c,
+                last_message: {
+                  content: message.content,
+                  time: message.time,
+                },
+              };
+            });
+
+            store.set('chats', updatedChats);
           },
         });
 
@@ -231,6 +270,61 @@ export class ChatListPage extends Block<ChatListPageProps> {
     if (input) input.value = '';
   }
 
+  private handleAddUser(): void {
+    const chatId = store.getState().selectedChatId;
+    if (!chatId) {
+      alert('Сначала выбери чат');
+      return;
+    }
+
+    const loginRaw = window.prompt('Логин пользователя для добавления');
+    const login = (loginRaw ?? '').trim();
+    if (!login) return;
+
+    void this.props.app.userController
+      .searchUsers(login)
+      .then((users) => {
+        const user = users[0];
+        if (!user) throw new Error('Пользователь не найден');
+
+        return this.props.app.chatController.addUsersToChat(chatId, [user.id]);
+      })
+      .then(() => {
+        alert('Пользователь добавлен в чат');
+      })
+      .catch((error: unknown) => {
+        const msg = error instanceof Error ? error.message : 'Не удалось добавить пользователя';
+        alert(msg);
+      });
+  }
+
+  private handleRemoveUser(): void {
+    const chatId = store.getState().selectedChatId;
+    if (!chatId) {
+      alert('Сначала выбери чат');
+      return;
+    }
+
+    const loginRaw = window.prompt('Логин пользователя для удаления');
+    const login = (loginRaw ?? '').trim();
+    if (!login) return;
+
+    void this.props.app.userController
+      .searchUsers(login)
+      .then((users) => {
+        const user = users[0];
+        if (!user) throw new Error('Пользователь не найден');
+
+        return this.props.app.chatController.removeUsersFromChat(chatId, [user.id]);
+      })
+      .then(() => {
+        alert('Пользователь удалён из чата');
+      })
+      .catch((error: unknown) => {
+        const msg = error instanceof Error ? error.message : 'Не удалось удалить пользователя';
+        alert(msg);
+      });
+  }
 
   render(): string {
     return `<div class="chat-list">
@@ -249,6 +343,10 @@ export class ChatListPage extends Block<ChatListPageProps> {
         </aside>
 
         <div class="right">
+           <div>
+            {{{ AddUserBtn }}}
+            {{{ RemoveUserBtn }}}
+           </div>
           <div class="right__messages">
             {{{ MessageItems }}}
           </div>

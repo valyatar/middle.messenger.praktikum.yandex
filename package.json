@@ -20,11 +20,12 @@
     "type:check": "tsc --noEmit",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
+    "lint:staged": "lint-staged",
     "lint:style": "stylelint \"**/*.pcss\"",
     "lint:style:fix": "stylelint \"**/*.pcss\" --fix",
     "validate": "npm run type:check && npm run lint && npm run lint:style",
-    "test:build": "tsc -p tsconfig.test.json",
-    "test": "npm run test:build && node --experimental-specifier-resolution=node node_modules/mocha/bin/mocha.js \"dist-test/**/*.test.js\""
+    "test:build": "tsc -p tsconfig.test.json && node scripts/fix-test-imports.mjs",
+    "test": "npm run test:build && mocha \"dist-test/**/*.test.js\""
   },
   "lint-staged": {
     "*.{ts,js}": [
@@ -54,6 +55,7 @@
     "stylelint-config-standard": "^36.0.1",
     "stylelint-order": "^6.0.4",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.16",
     "tsx": "^4.21.0",
     "typescript": "^5.5.4",
     "vite": "^4.3.9"

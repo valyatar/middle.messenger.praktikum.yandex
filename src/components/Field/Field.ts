@@ -10,6 +10,7 @@ export interface FieldProps extends BlockProps {
   value: string;
   readonly?: boolean;
   href?: string;
+  placeholder?: string;
 }
 
 export class Field extends Block<FieldProps> {
@@ -19,7 +20,7 @@ export class Field extends Block<FieldProps> {
       FieldInput: new Input({
         name: props.name,
         type: '',
-        placeholder: props.label,
+        placeholder: props.placeholder ?? props.label,
         value: props.value,
       }),
     });

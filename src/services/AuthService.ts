@@ -1,6 +1,7 @@
-import { HTTPTransport } from './http/HTTPTransport';
 import { LoginData, RegisterData, User } from '../types/app';
-import { isSuccessStatus } from './http/HttpStatus';
+import { HTTPError, HTTPTransport } from './http/HTTPTransport';
+
+type SignUpResponse = { id: number };
 
 export class AuthService {
   private http: HTTPTransport;
@@ -10,48 +11,54 @@ export class AuthService {
   }
 
   async login(data: LoginData): Promise<void> {
-    const response = await this.http.post('/auth/signin', {
-      data: JSON.stringify(data),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!isSuccessStatus(response.status)) {
-      throw new Error(`Login failed with status ${response.status}`);
+    try {
+      await this.http.post<void>('/auth/signin', {
+        data,
+      });
+    } catch (e: unknown) {
+      if (e instanceof HTTPError) {
+        const msg = e.reason ? `Login failed: ${e.reason}` : `Login failed (status ${e.status})`;
+        throw new Error(msg);
+      }
+      throw e;
     }
   }
 
-  async register(data: RegisterData): Promise<{ id: number }> {
-    const response = await this.http.post('/auth/signup', {
-      data: JSON.stringify(data),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!isSuccessStatus(response.status)) {
-      throw new Error(`Registration failed with status ${response.status}`);
+  async register(data: RegisterData): Promise<SignUpResponse> {
+    try {
+      return await this.http.post<SignUpResponse>('/auth/signup', {
+        data,
+      });
+    } catch (e: unknown) {
+      if (e instanceof HTTPError) {
+        const msg = e.reason ? `Registration failed: ${e.reason}` : `Registration failed (status ${e.status})`;
+        throw new Error(msg);
+      }
+      throw e;
     }
-
-    return JSON.parse(response.responseText);
   }
 
   async logout(): Promise<void> {
-    const response = await this.http.post('/auth/logout');
-
-    if (!isSuccessStatus(response.status)) {
-      throw new Error(`Logout failed with status ${response.status}`);
+    try {
+      await this.http.post<void>('/auth/logout');
+    } catch (e: unknown) {
+      if (e instanceof HTTPError) {
+        const msg = e.reason ? `Logout failed: ${e.reason}` : `Logout failed (status ${e.status})`;
+        throw new Error(msg);
+      }
+      throw e;
     }
   }
 
   async getUser(): Promise<User> {
-    const response = await this.http.get('/auth/user');
-
-    if (!isSuccessStatus(response.status)) {
-      throw new Error(`Get user failed with status ${response.status}`);
+    try {
+      return await this.http.get<User>('/auth/user');
+    } catch (e: unknown) {
+      if (e instanceof HTTPError) {
+        const msg = e.reason ? `Get user failed: ${e.reason}` : `Get user failed (status ${e.status})`;
+        throw new Error(msg);
+      }
+      throw e;
     }
-
-    return JSON.parse(response.responseText);
   }
 }

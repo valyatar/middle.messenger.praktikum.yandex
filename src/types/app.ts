@@ -1,4 +1,6 @@
 import { BlockProps } from '../framework/Block';
+import Router from '../router/Router';
+import { MessagesService } from '../services/MessagesService';
 
 export interface LoginData {
   login: string;
@@ -58,20 +60,23 @@ export interface AuthController {
   logout: () => Promise<void>;
   checkAuth: () => Promise<boolean>;
   getCurrentUser: () => User | null;
+  fetchUser: () => Promise<User>;
 }
 
 export interface UserController {
-  updateProfile: (profileData: UserProfileData) => Promise<boolean>;
-  updateAvatar: (avatarFile: File) => Promise<boolean>;
+  updateProfile: (profileData: UserProfileData) => Promise<User>;
+  changeAvatar: (avatarFile: File) => Promise<User>;
   changePassword: (data: ChangePasswordData) => Promise<boolean>;
   searchUsers: (login: string) => Promise<User[]>;
 }
 
 export interface ChatController {
   loadChats: () => Promise<Chat[]>;
-  createChat: (title: string) => Promise<boolean>;
-  deleteChat: (chatId: number) => Promise<boolean>;
-  addUsersToChat: (chatId: number, users: number[]) => Promise<boolean>;
+  createChat: (title: string) => Promise<Chat[]>;
+  deleteChat: (chatId: number) => Promise<Chat[]>;
+  addUsersToChat: (chatId: number, users: number[]) => Promise<void>;
+  removeUsersFromChat: (chatId: number, users: number[]) => Promise<void>;
+  getChatToken: (chatId: number) => Promise<{ token: string }>;
   getCurrentChats: () => Chat[];
   getChatById: (chatId: number) => Chat | undefined;
 }
@@ -80,7 +85,8 @@ export interface AppWithControllers {
   authController: AuthController;
   userController: UserController;
   chatController: ChatController;
-  changePage: (page: string) => void;
+  router: Router;
+  messagesService: MessagesService;
 }
 
 export interface AuthorizationPageProps extends BlockProps {

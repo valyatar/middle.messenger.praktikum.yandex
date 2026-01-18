@@ -10,15 +10,24 @@
         flex-direction: column;
 
         .left__search {
-            border-bottom: 1px solid #e5e5e5;
-            flex: 0 0 56px;
-            padding: 8px;
+          align-items: center;
+          border-bottom: 1px solid #e5e5e5;
+          display: flex;
+          flex: 0 0 56px;
+          gap: 8px;
+          padding: 8px;
         }
 
         .left__list   {
             flex: 1 1 auto;
             overflow: auto;
         }
+
+      .left__profile-link {
+        display: flex;
+        justify-content: flex-end;
+        padding: 10px 8px 0;
+      }
     }
 
     .right {

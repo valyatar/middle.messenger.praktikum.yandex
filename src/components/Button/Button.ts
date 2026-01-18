@@ -6,20 +6,33 @@ export interface ButtonProps extends BlockProps {
   type?: 'button' | 'submit' | 'reset';
   disabled?: boolean;
   icon?: string;
+  size?: 's' | 'm';
 }
 
 export default class Button extends Block<ButtonProps> {
   constructor(props: ButtonProps) {
     super({
       ...props,
-      events: {},
     });
   }
 
   render() {
-    const { icon } = this.props;
+    const { icon, size } = this.props;
 
     if (icon) {
+      if (size === 's') {
+        return (
+          `<button
+            id="{{id}}"
+            class="button button--icon-round button--small"
+            type="{{#if type}}{{type}}{{else}}button{{/if}}"
+            {{#if disabled}}disabled{{/if}}
+            aria-label="Кнопка с иконкой"
+          >
+            <span class="button__icon">${icon}</span>
+          </button>`
+        );
+      }
       return (
         `<button
             id="{{id}}"

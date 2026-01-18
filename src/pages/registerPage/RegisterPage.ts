@@ -4,6 +4,7 @@ import Input from '../../components/Input/Input';
 import Button from '../../components/Button/Button';
 import { validateForm } from '../../helpers/validation';
 import { RegisterPageProps } from '../../types/app';
+import { initAfterAuth } from '../../helpers/initAfterAuth';
 
 export class RegisterPage extends Block<RegisterPageProps> {
   constructor(props: RegisterPageProps) {
@@ -56,14 +57,12 @@ export class RegisterPage extends Block<RegisterPageProps> {
         type: 'submit',
       }),
       SignInLink: new Link({
-        href: '#',
-        datapage: 'authorization',
+        href: '/',
         text: 'Войти?',
         onClick: (event: Event) => {
           event.preventDefault();
-          event.stopPropagation();
+          props.app.router.go('/');
         },
-        id: 'signIn',
       }),
       events: {
         submit: (e: Event) => this.handleSubmit(e),
@@ -78,16 +77,41 @@ export class RegisterPage extends Block<RegisterPageProps> {
 
   private handleSubmit(event: Event): void {
     event.preventDefault();
-
     const form = event.target as HTMLFormElement;
     const validationResult = validateForm(form);
 
     if (!validationResult.isValid) {
-      console.log('Ошибка валидации');
+      alert('Ошибка валидации');
       return;
     }
 
-    console.log('Данные со страницы регистрации:', validationResult.data);
+    const data = validationResult.data as Record<string, unknown>;
+
+    const payload = {
+      email: typeof data.email === 'string' ? data.email : '',
+      login: typeof data.login === 'string' ? data.login : '',
+      first_name: typeof data.first_name === 'string' ? data.first_name : '',
+      second_name: typeof data.second_name === 'string' ? data.second_name : '',
+      phone: typeof data.phone === 'string' ? data.phone : '',
+      password: typeof data.password === 'string' ? data.password : '',
+    };
+
+    void this.props.app.authController
+      .register(payload)
+      .then((ok) => {
+        if (!ok) {
+          alert('Не удалось зарегистрироваться');
+          return;
+        }
+        return initAfterAuth(this.props.app);
+      })
+      .then(() => {
+        this.props.app.router.go('/messenger');
+      })
+      .catch((error: unknown) => {
+        const msg = error instanceof Error ? error.message : 'Ошибка регистрации';
+        alert(msg);
+      });
   }
 
   render(): string {

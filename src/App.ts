@@ -1,9 +1,11 @@
+import Router from './router/Router';
+
 import { AuthorizationPage } from './pages/authorizationPage/AuthorizationPage';
-import Footer from './components/Footer/Footer';
 import { RegisterPage } from './pages/registerPage/RegisterPage';
 import { ChatListPage } from './pages/chatListPage/ChatListPage';
 import { ProfilePage } from './pages/profilePage/ProfilePage';
-import { ChangePasswordPage } from './pages/profilePage/changePasswordPage/ChangePasswordPage';
+import { ChangePasswordPage } from './pages/profilePage/changeUserDataPages/ChangePasswordPage';
+import { ChangeDataPage } from './pages/profilePage/changeUserDataPages/ChangeDataPage';
 import ErrorPage404 from './pages/errorPages/error404/ErrorPage404';
 import ErrorPage500 from './pages/errorPages/error500/ErrorPage500';
 
@@ -15,17 +17,11 @@ import { UserController } from './controllers/UserController';
 import { ChatController } from './controllers/ChatController';
 
 import { AppWithControllers } from './types/app';
-
-interface AppState {
-  currentPage: string;
-}
+import { store } from './store/Store';
+import { MessagesService } from './services/MessagesService';
 
 export default class App implements AppWithControllers {
   private appElement: HTMLElement | null;
-
-  private readonly state: AppState;
-
-  private footer: Footer;
 
   private readonly pageContainer: HTMLElement;
 
@@ -35,109 +31,77 @@ export default class App implements AppWithControllers {
 
   public chatController: ChatController;
 
+  public router: Router;
+
+  public messagesService: MessagesService;
+
   constructor() {
-    this.state = {
-      currentPage: 'authorization',
-    };
     this.appElement = document.getElementById('app');
-    this.footer = new Footer();
 
     this.pageContainer = document.createElement('main');
     this.pageContainer.id = 'page';
-
     this.appElement?.appendChild(this.pageContainer);
-    this.appElement?.appendChild(this.footer.getContent());
+
+    this.router = new Router('#page');
 
     this.initializeMVC();
+
+    this.messagesService = new MessagesService();
+
+    this.registerRoutes();
   }
 
-  private initializeMVC() {
+  private initializeMVC(): void {
     const authService = new AuthService();
     const userService = new UserService();
     const chatService = new ChatsService();
 
-    this.authController = new AuthController(authService);
+    this.authController = new AuthController(authService, this.router);
     this.userController = new UserController(userService);
     this.chatController = new ChatController(chatService);
   }
 
-  render() {
-    const { currentPage } = this.state;
-    let pageHTML;
-    switch (currentPage) {
-      case 'authorization':
-        pageHTML = new AuthorizationPage({
-          app: this,
-        });
-        break;
-      case 'registration':
-        pageHTML = new RegisterPage({
-          app: this,
-        });
-        break;
-      case 'chatList':
-        pageHTML = new ChatListPage({
-          app: this,
-        });
-        break;
-      case 'profileSettings':
-        pageHTML = new ProfilePage({
-          app: this,
-        });
-        break;
-      case 'changePassword':
-        pageHTML = new ChangePasswordPage({
-          app: this,
-        });
-        break;
-      case 'error404':
-        pageHTML = new ErrorPage404({
-          app: this,
-        });
-        break;
-      case 'error500':
-        pageHTML = new ErrorPage500({
-          app: this,
-        });
-        break;
-    }
-
-    this.pageContainer.innerHTML = '';
-    if (pageHTML) {
-      this.pageContainer.appendChild(pageHTML.getContent());
-    }
-
-    this.addEventListeners();
+  private registerRoutes(): void {
+    this.router
+      .use('/', AuthorizationPage, { app: this })
+      .use('/sign-up', RegisterPage, { app: this })
+      .use('/settings', ProfilePage, { app: this })
+      .use('/messenger', ChatListPage, { app: this })
+      .use('/settings/password', ChangePasswordPage, { app: this })
+      .use('/settings/userData', ChangeDataPage, { app: this })
+      .use('/404', ErrorPage404, { app: this })
+      .use('/500', ErrorPage500, { app: this });
   }
 
-  changePage(page: string) {
-    this.state.currentPage = page;
-    this.render();
-  }
+  public async init(): Promise<void> {
+    const isAuth = await this.authController.checkAuth();
 
-  addEventListeners() {
-    const { currentPage } = this.state;
-    if (currentPage === 'authorization') {
-      const createAccountBtn = document.getElementById('createAccount');
-      createAccountBtn?.addEventListener('click', () => this.changePage('registration'));
-    } else if (currentPage === 'registration') {
-      const signInBtn = document.getElementById('signIn');
-      signInBtn?.addEventListener('click', () => this.changePage('authorization'));
-    } else if (currentPage === 'profileSettings') {
-      const changePwdBtn = document.getElementById('changePassword');
-      changePwdBtn?.addEventListener('click', () => this.changePage('changePassword'));
+    if (isAuth) {
+      const user = await this.authController.fetchUser();
+      store.set('user', user);
+
+      try {
+        const chats = await this.chatController.loadChats();
+        store.set('chats', chats);
+      } catch (e) {
+        store.set('chats', []);
+      }
+    } else {
+      store.set('user', null);
+      store.set('chats', []);
+      store.set('selectedChatId', null);
     }
 
-    const footerLinks = document.querySelectorAll('.footer-link');
-    footerLinks.forEach(link => {
-      link.addEventListener('click', (e: MouseEvent) => {
-        e.preventDefault();
-        const target = e.target as HTMLElement;
-        const page = target.closest('a')?.dataset.page;
-        if (page) {
-          this.changePage(page);
-        }
-      });
-    });
+    const publicRoutes = new Set<string>(['/', '/sign-up']);
+    const pathname = window.location.pathname;
+
+    if (!isAuth && !publicRoutes.has(pathname)) {
+      window.history.replaceState({}, '', '/');
+    }
+  }
+
+
+  public render(): void {
+    this.router.start();
   }
 }

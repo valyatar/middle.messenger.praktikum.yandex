@@ -203,6 +203,8 @@ export default abstract class Block<Props extends BlockProps> {
       return;
     }
     Object.assign(this.lists, nextList);
+
+    this.eventBus().emit(Block.EVENTS.FLOW_RENDER);
   };
 
   get element(): HTMLElement | null {

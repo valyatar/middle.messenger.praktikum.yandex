@@ -1,6 +1,7 @@
 import { HTTPTransport } from './http/HTTPTransport';
 import { ChangePasswordData, User, UserProfileData } from '../types/app';
-import { isSuccessStatus } from './http/HttpStatus';
+
+type SearchUserRequest = { login: string };
 
 export class UserService {
   private http: HTTPTransport;
@@ -10,78 +11,33 @@ export class UserService {
   }
 
   async changeProfile(data: UserProfileData): Promise<User> {
-    const response = await this.http.put('/user/profile', {
-      data: JSON.stringify(data),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    return this.http.put<User>('/user/profile', {
+      data,
     });
-
-    return this.parseResponse<User>(response);
   }
 
   async changeAvatar(avatar: File): Promise<User> {
     const formData = new FormData();
     formData.append('avatar', avatar);
 
-    const response = await this.http.put('/user/profile/avatar', {
+    return this.http.put<User>('/user/profile/avatar', {
       data: formData,
     });
-
-    return this.parseResponse<User>(response);
   }
 
   async changePassword(data: ChangePasswordData): Promise<void> {
-    const response = await this.http.put('/user/password', {
-      data: JSON.stringify(data),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    await this.http.put<void>('/user/password', {
+      data,
     });
-
-    this.checkResponse(response);
   }
 
   async searchUser(login: string): Promise<User[]> {
-    const response = await this.http.post('/user/search', {
-      data: JSON.stringify({ login }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    return this.http.post<User[]>('/user/search', {
+      data: { login } as SearchUserRequest,
     });
-
-    return this.parseResponse<User[]>(response);
   }
 
   async getUserById(id: number): Promise<User> {
-    const response = await this.http.get(`/user/${id}`);
-    return this.parseResponse<User>(response);
-  }
-
-  private parseResponse<T>(response: XMLHttpRequest): T {
-    this.checkResponse(response);
-
-    if (!response.responseText) {
-      throw new Error('Empty response body');
-    }
-
-    try {
-      return JSON.parse(response.responseText) as T;
-    } catch (error) {
-      throw new Error('Failed to parse response JSON');
-    }
-  }
-
-  private checkResponse(response: XMLHttpRequest): void {
-    if (!isSuccessStatus(response.status)) {
-      let errorMessage = `Request failed with status ${response.status}`;
-      try {
-        const errorData = JSON.parse(response.responseText);
-        errorMessage = errorData.reason || errorMessage;
-      } catch {
-      }
-
-      throw new Error(errorMessage);
-    }
+    return this.http.get<User>(`/user/${id}`);
   }
 }

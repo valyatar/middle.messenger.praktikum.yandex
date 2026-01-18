@@ -4,6 +4,7 @@ import Input from '../../components/Input/Input';
 import Button from '../../components/Button/Button';
 import { validateForm } from '../../helpers/validation';
 import { AuthorizationPageProps } from '../../types/app';
+import { initAfterAuth } from '../../helpers/initAfterAuth';
 
 export class AuthorizationPage extends Block<AuthorizationPageProps> {
   constructor(props: AuthorizationPageProps) {
@@ -26,14 +27,12 @@ export class AuthorizationPage extends Block<AuthorizationPageProps> {
         type: 'submit',
       }),
       CreateAccountLink: new Link({
-        href: '#',
-        datapage: 'registration',
+        href: '/sign-up',
         text: 'Нет аккаунта?',
         onClick: (event: Event) => {
           event.preventDefault();
-          event.stopPropagation();
+          props.app.router.go('/sign-up');
         },
-        id: 'createAccount',
       }),
       events: {
         submit: (e: Event) => this.handleSubmit(e),
@@ -52,11 +51,30 @@ export class AuthorizationPage extends Block<AuthorizationPageProps> {
     const validationResult = validateForm(form);
 
     if (!validationResult.isValid) {
-      console.log('Ошибка валидации');
+      alert('Ошибка валидации');
       return;
     }
 
-    console.log('Данные со страницы авторизации:', validationResult.data);
+    const data = validationResult.data as Record<string, unknown>;
+    const login = typeof data.login === 'string' ? data.login : '';
+    const password = typeof data.password === 'string' ? data.password : '';
+
+    void this.props.app.authController
+      .login(login, password)
+      .then((ok) => {
+        if (!ok) {
+          alert('Неверный логин или пароль');
+          return;
+        }
+        return initAfterAuth(this.props.app);
+      })
+      .then(() => {
+        this.props.app.router.go('/messenger');
+      })
+      .catch((error: unknown) => {
+        const msg = error instanceof Error ? error.message : 'Ошибка авторизации';
+        alert(msg);
+      });
   }
 
   render(): string {

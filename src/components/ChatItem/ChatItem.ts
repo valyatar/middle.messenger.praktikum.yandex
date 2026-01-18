@@ -8,19 +8,30 @@ interface ChatItemProps extends BlockProps {
   time?: string;
   unreadCount?: number;
   avatar?: string;
-  onClick?: (chatId: number) => void;
+  isActive?: boolean;
+  onSelect?: (chatId: number) => void;
 }
 
 export class ChatItem extends Block<ChatItemProps> {
   constructor(props: ChatItemProps) {
     super({
       ...props,
+      events: {
+        click: (e: Event) => {
+          e.preventDefault();
+
+          const idNum = Number(props.id);
+          if (!Number.isNaN(idNum)) {
+            props.onSelect?.(idNum);
+          }
+        },
+      },
     });
   }
 
   render(): string {
     return `
-      <div class="chat-item" data-chat-id="{{id}}">
+      <div class="chat-item {{#if isActive}}chat-item__active{{/if}}" data-chat-id="{{id}}">
         <div class="chat-item__avatar">
             <div class="chat-item__avatar-placeholder"></div>
         </div>

@@ -12,6 +12,7 @@
     }
   },
   "scripts": {
+    "prepare": "husky install",
     "dev": "vite",
     "build": "vite build",
     "start": "vite build && node server.cjs",
@@ -25,6 +26,14 @@
     "test:build": "tsc -p tsconfig.test.json",
     "test": "npm run test:build && node --experimental-specifier-resolution=node node_modules/mocha/bin/mocha.js \"dist-test/**/*.test.js\""
   },
+  "lint-staged": {
+    "*.{ts,js}": [
+      "eslint --fix"
+    ],
+    "*.pcss": [
+      "stylelint --fix"
+    ]
+  },
   "devDependencies": {
     "@types/chai": "^4.3.11",
     "@types/jsdom": "^21.1.7",
@@ -35,7 +44,9 @@
     "chai": "^4.3.10",
     "eslint": "^8.56.0",
     "eslint-config-airbnb-typescript": "^18.0.0",
+    "husky": "^9.1.7",
     "jsdom": "^22.1.0",
+    "lint-staged": "^16.2.7",
     "mocha": "^11.7.5",
     "postcss": "^8.4.40",
     "postcss-preset-env": "^9.6.0",

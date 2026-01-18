@@ -1,2 +1,4 @@
+#!/bin/bash
+
 npx lint-staged --allow-empty
 npm test

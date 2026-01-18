@@ -12,6 +12,7 @@
     }
   },
   "scripts": {
+    "prepare": "husky",
     "dev": "vite",
     "build": "vite build",
     "start": "vite build && node server.cjs",
@@ -19,26 +20,52 @@
     "type:check": "tsc --noEmit",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
+    "lint:staged": "lint-staged",
     "lint:style": "stylelint \"**/*.pcss\"",
     "lint:style:fix": "stylelint \"**/*.pcss\" --fix",
-    "validate": "npm run type:check && npm run lint && npm run lint:style"
+    "validate": "npm run type:check && npm run lint && npm run lint:style",
+    "test:build": "tsc -p tsconfig.test.json && node scripts/fix-test-imports.mjs",
+    "test": "npm run test:build && mocha \"dist-test/**/*.test.js\""
+  },
+  "lint-staged": {
+    "*.{ts,js}": [
+      "eslint --fix"
+    ],
+    "*.pcss": [
+      "stylelint --fix"
+    ]
+  },
+  "overrides": {
+    "mocha": {
+      "diff": "^8.0.3"
+    }
   },
   "devDependencies": {
+    "@types/chai": "^4.3.11",
+    "@types/jsdom": "^21.1.7",
+    "@types/mocha": "^10.0.10",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "autoprefixer": "^10.4.19",
+    "chai": "^4.3.10",
     "eslint": "^8.56.0",
     "eslint-config-airbnb-typescript": "^18.0.0",
+    "husky": "^9.1.7",
+    "jsdom": "^22.1.0",
+    "lint-staged": "^16.2.7",
+    "mocha": "^11.7.5",
     "postcss": "^8.4.40",
     "postcss-preset-env": "^9.6.0",
     "stylelint": "^16.9.0",
     "stylelint-config-standard": "^36.0.1",
     "stylelint-order": "^6.0.4",
+    "tsc-alias": "^1.8.16",
+    "tsx": "^4.21.0",
     "typescript": "^5.5.4",
-    "vite": "^4.3.9"
+    "vite": "^7.3.1"
   },
   "dependencies": {
-    "handlebars": "^4.7.7",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "handlebars": "^4.7.7"
   }
 }

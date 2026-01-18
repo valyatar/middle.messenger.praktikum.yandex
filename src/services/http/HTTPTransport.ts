@@ -60,6 +60,7 @@ export class HTTPError extends Error {
 
 export const BASE_URL = 'https://ya-praktikum.tech/api/v2';
 export const RESOURCES_BASE = `${BASE_URL}/resources`;
+type HTTPMethod = <R=unknown>(url: string, options?: Omit<RequestOptions, 'method'> ) => Promise<R>;
 
 export class HTTPTransport {
   private readonly baseUrl: string;
@@ -68,21 +69,21 @@ export class HTTPTransport {
     this.baseUrl = BASE_URL;
   }
 
-  public get<TResponse>(path: string, options: Omit<RequestOptions, 'method'> = {}): Promise<TResponse> {
-    return this.request<TResponse>(path, { ...options, method: METHODS.GET });
-  }
+  get: HTTPMethod = (url, options = {}) => (
+    this.request(url, { ...options, method: METHODS.GET })
+  );
 
-  public post<TResponse>(path: string, options: Omit<RequestOptions, 'method'> = {}): Promise<TResponse> {
-    return this.request<TResponse>(path, { ...options, method: METHODS.POST });
-  }
+  put: HTTPMethod = (url, options = {}) => (
+    this.request(url, { ...options, method: METHODS.PUT })
+  );
 
-  public put<TResponse>(path: string, options: Omit<RequestOptions, 'method'> = {}): Promise<TResponse> {
-    return this.request<TResponse>(path, { ...options, method: METHODS.PUT });
-  }
+  post: HTTPMethod = (url, options = {}) => (
+    this.request(url, { ...options, method: METHODS.POST })
+  );
 
-  public delete<TResponse>(path: string, options: Omit<RequestOptions, 'method'> = {}): Promise<TResponse> {
-    return this.request<TResponse>(path, { ...options, method: METHODS.DELETE });
-  }
+  delete: HTTPMethod = (url, options = {}) => (
+    this.request(url, { ...options, method: METHODS.DELETE })
+  );
 
   private request<TResponse>(path: string, options: RequestOptions): Promise<TResponse> {
     const {

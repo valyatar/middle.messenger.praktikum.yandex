@@ -66,7 +66,7 @@ export default class Router {
     this.history.forward();
   }
 
-  private getRoute(pathname: string): Route<BlockProps> | undefined {
+  public getRoute(pathname: string): Route<BlockProps> | undefined {
     return this.routes.find((route) => route.match(pathname));
   }
 }

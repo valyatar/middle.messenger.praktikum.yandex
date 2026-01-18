@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist-test",
+    "noEmit": false,
+    "declaration": false,
+    "sourceMap": false,
+    "module": "ESNext",
+    "target": "ES2020"
+  },
+  "include": ["src/**/*.test.ts", "src/test/setup.ts"]
+}
